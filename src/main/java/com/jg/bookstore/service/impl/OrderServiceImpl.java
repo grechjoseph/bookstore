@@ -71,13 +71,14 @@ public class OrderServiceImpl implements OrderService {
         switch(orderStatus) {
             case CONFIRMED:
                 return confirmOrder(purchaseOrder);
-            case PAID:
-                purchaseOrder.setOrderStatus(PAID);
-                return orderRepository.save(purchaseOrder);
             case REFUNDED:
                 return refundOrder(purchaseOrder);
             case CANCELLED:
                 return cancelOrder(purchaseOrder);
+            case SHIPPED:
+            case PAID:
+                purchaseOrder.setOrderStatus(orderStatus);
+                return orderRepository.save(purchaseOrder);
             default:
                 return purchaseOrder;
         }
