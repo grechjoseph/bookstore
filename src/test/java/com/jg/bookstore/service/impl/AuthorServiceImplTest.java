@@ -1,6 +1,7 @@
 package com.jg.bookstore.service.impl;
 
 import com.jg.bookstore.domain.entity.Author;
+import com.jg.bookstore.domain.exception.BaseException;
 import com.jg.bookstore.domain.repository.AuthorRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,9 +11,11 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.jg.bookstore.domain.exception.ErrorCode.AUTHOR_NOT_FOUND;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,12 +38,12 @@ public class AuthorServiceImplTest {
 
     @BeforeEach
     public void beforeEach() {
-        // Return first argument passed.
         when(authorRepository.save(any(Author.class))).thenAnswer(new Answer() {
             public Object answer(InvocationOnMock invocation) {
                 return invocation.getArguments()[0];
             }
         });
+        when(authorRepository.findByIdAndDeletedFalse(any(UUID.class))).thenReturn(Optional.of(author));
 
         when(author.getFirstName()).thenReturn(FIRST_NAME);
         when(author.getLastName()).thenReturn(LAST_NAME);
@@ -52,6 +55,18 @@ public class AuthorServiceImplTest {
         final Author result = authorService.createAuthor(this.author);
         verify(authorRepository).save(author);
         assertThat(result).isEqualTo(author);
+    }
+
+    @Test
+    public void getAuthorById_authorExist_shouldReturnAuthor() {
+        assertThatCode(() -> authorService.getAuthorById(UUID.randomUUID())).doesNotThrowAnyException();
+    }
+
+    @Test
+    public void getAuthorById_authorDoesNotExist_shouldThrowAuthorNotFoundException() {
+        when(authorRepository.findByIdAndDeletedFalse(any(UUID.class))).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> authorService.getAuthorById(UUID.randomUUID()))
+            .isEqualTo(new BaseException(AUTHOR_NOT_FOUND));
     }
 
     /*
