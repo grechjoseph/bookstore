@@ -1,14 +1,18 @@
 package com.jg.bookstore.api.dto.order;
 
 import com.jg.bookstore.api.dto.orderentry.ApiOrderEntry;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@ApiModel(value = "Object representing a Purchase Order being created or updated.")
 public class ApiPurchaseOrder {
 
+    @ApiModelProperty(value = "Purchase Order's Order Entries.")
     private final List<ApiOrderEntry> orderEntries = new ArrayList<>();
 
 }
