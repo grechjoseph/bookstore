@@ -31,6 +31,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public PurchaseOrder createOrder(final Set<OrderEntry> orderEntries) {
+        log.debug("Creating Purchase Order.");
         validateOrderEntries(orderEntries);
         final PurchaseOrder purchaseOrder = new PurchaseOrder();
         purchaseOrder.setOrderEntries(orderEntries);
@@ -39,16 +40,19 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public PurchaseOrder getOrderById(final UUID orderId) {
+        log.debug("Retrieving Purchase Order by ID [{}].", orderId);
         return orderRepository.findById(orderId).orElseThrow(() -> new BaseException(ORDER_NOT_FOUND));
     }
 
     @Override
     public List<PurchaseOrder> getOrders() {
+        log.debug("Retrieving Purchase Orders.");
         return orderRepository.findAll();
     }
 
     @Override
     public PurchaseOrder updateOrderItems(final UUID orderId, final Set<OrderEntry> orderEntries) {
+        log.debug("Updating Order Entries for Purchase Order with ID [{}].", orderId);
         validateOrderEntries(orderEntries);
         final PurchaseOrder purchaseOrder = getOrderById(orderId);
 
@@ -56,6 +60,7 @@ public class OrderServiceImpl implements OrderService {
             throw new BaseException(ORDER_INVALID_STATUS);
         }
 
+        log.debug("Clearing old Order Entries for Purchase Order with ID [{}].", orderId);
         purchaseOrder.getOrderEntries().clear();
         // This flush is required to save the deletion of the older items, since otherwise, the unique constraint will be hit.
         orderRepository.flush();
@@ -65,6 +70,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public PurchaseOrder updateOrderStatus(final UUID orderId, final OrderStatus orderStatus) {
+        log.debug("Setting Purchase Order with ID [{}] to {}.", orderId, orderStatus);
         final PurchaseOrder purchaseOrder = getOrderById(orderId);
         validateOrderStatusTransition(purchaseOrder, orderStatus);
 
@@ -80,6 +86,7 @@ public class OrderServiceImpl implements OrderService {
                 purchaseOrder.setOrderStatus(orderStatus);
                 return orderRepository.save(purchaseOrder);
             default:
+                log.warn("Unrecognised Order Status provided.");
                 return purchaseOrder;
         }
     }
@@ -102,7 +109,14 @@ public class OrderServiceImpl implements OrderService {
                     1. Stock is not adjusted.
                     2. PurchaseOrder is put back in CREATED state for editing.
                  */
-            if(exception.getErrorCode().equals(ORDER_NOT_ENOUGH_STOCK)) {
+            if (exception.getErrorCode().equals(ORDER_NOT_ENOUGH_STOCK)) {
+                log.warn("Reverting Purchase Order with ID [{}] to 'CREATED' since its requested stock is not fully available.", purchaseOrder.getId());
+                purchaseOrder.setOrderStatus(CREATED);
+                orderRepository.save(purchaseOrder);
+            }
+
+            if (exception.getErrorCode().equals(BOOK_NOT_FOUND)) {
+                log.warn("Reverting Purchase Order with ID [{}] to 'CREATED' since its requested items are not fully available.", purchaseOrder.getId());
                 purchaseOrder.setOrderStatus(CREATED);
                 orderRepository.save(purchaseOrder);
             }
@@ -132,6 +146,7 @@ public class OrderServiceImpl implements OrderService {
             Otherwise, when CANCELLED after being CREATED, no stock was ever adjusted.
          */
         if (purchaseOrder.getOrderStatus().equals(CONFIRMED)) {
+            log.debug("Detected Purchase Order status transition [{} -> {}]. Reverting Book Stocks.", CONFIRMED, CANCELLED);
             reverseOrderStock(purchaseOrder);
             purchaseOrder.setOrderStatus(CANCELLED);
             return orderRepository.save(purchaseOrder);
@@ -156,10 +171,23 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     private void lockAndUpdateStock(final Set<OrderEntry> orderEntries) throws BaseException {
+        log.debug("Updating Book stocks.");
         final Set<Book> booksToUpdate = new HashSet<>();
 
         orderEntries.forEach(orderEntry -> {
-            final Book book = bookRepository.findByIdAndLock(orderEntry.getBook().getId());
+            final Book book;
+
+            // If reverting (putting back), ignore whether deleted or not. Else, consider only non-deleted books for taking.
+            if(orderEntry.getQuantity() < 0) {
+                book = bookRepository.findByIdAndLock(orderEntry.getBook().getId())
+                        .orElseThrow(() -> new BaseException(BOOK_NOT_FOUND));
+            } else {
+                book = bookRepository.findByIdAndDeletedFalseAndLock(orderEntry.getBook().getId())
+                        .orElseGet(() -> {
+                            log.warn("Book with ID [{}] is no longer available.", orderEntry.getBook().getId());
+                            throw new BaseException(BOOK_NOT_FOUND);
+                        });
+            }
 
             if(book.getStock() < orderEntry.getQuantity()) {
                 log.warn("Not enough stock of Book [{}], wanted [{}] - available [{}].", book.getId(), orderEntry.getQuantity(), book.getStock());
@@ -170,7 +198,7 @@ public class OrderServiceImpl implements OrderService {
             booksToUpdate.add(book);
         });
 
-        log.info("Updating Books.");
+        log.debug("Updating Books.");
         booksToUpdate.forEach(book -> log.debug("Book [{}] with new stock [{}].", book.getId(), book.getStock()));
         bookRepository.saveAll(booksToUpdate);
     }
