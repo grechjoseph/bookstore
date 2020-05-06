@@ -18,6 +18,10 @@ public enum OrderStatus {
         PAID.nextSteps = List.of(REFUNDED, SHIPPED);
     }
 
+    public boolean isUpdatable() {
+        return !List.of(PAID, CANCELLED, REFUNDED, SHIPPED).contains(this);
+    }
+
     public boolean isFinal() {
         return List.of(CANCELLED, REFUNDED, SHIPPED).contains(this);
     }
