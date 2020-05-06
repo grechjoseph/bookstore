@@ -56,7 +56,7 @@ public class OrderServiceImpl implements OrderService {
         validateOrderEntries(orderEntries);
         final PurchaseOrder purchaseOrder = getOrderById(orderId);
 
-        if(purchaseOrder.getOrderStatus().isUpdatable()) {
+        if(!purchaseOrder.getOrderStatus().isUpdatable()) {
             throw new BaseException(ORDER_INVALID_STATUS);
         }
 
