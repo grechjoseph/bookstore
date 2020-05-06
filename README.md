@@ -32,21 +32,21 @@ BookStoreApplication is a microservice providing endpoints to manage Authors, th
         Update Purchase Order Status with the below, possible flows:
             <ol>
                 <li>
-                    CREATED:
+                    CREATED [Order has been submitted]:
                         <ol>
                             <li>
-                                CONFIRMED (Commits stock to order):
+                                CONFIRMED [Order's stock is available. Commits stock to order]:
                                     <ol>
                                         <li>
-                                            PAID:
+                                            PAID [Payment has come in for the Order]:
                                                 <ol>
-                                                    <li>SHIPPED</li>
-                                                    <li>REFUNDED (Rolls back stock committed to order)</li>
+                                                    <li>SHIPPED [Order has been shipped]</li>
+                                                    <li>REFUNDED [Order has been refunded. Rolls back stock committed to order]</li>
                                                 </ol>
                                         </li>
-                                        <li>CANCELLED (Rolls back stock committed to order)</li>
+                                        <li>CANCELLED [Order has been Cancelled by User. Rolls back stock committed to order]</li>
                                     </ol>
-                            <li>CANCELLED</li>
+                            <li>CANCELLED [Order has been Cancelled by System]</li>
                         </ol>
                 </li>
             </ol>
@@ -65,6 +65,20 @@ BookStoreApplication is a microservice providing endpoints to manage Authors, th
     <li>Flyway</li>
     <li>Swagger API Documentation</li>
 </ul>
+
+<h2>Running the Application</h2>
+To run the application:
+<ol>
+    <li>Run command mvn clean install. This creates the target/book-store-application.jar file.</li>
+    <li>Run the JAR file using the command <b>java -jar target/book-store-application.jar.</b></li>
+</ol>
+
+To build and run a Docker image:
+<ol>
+    <li>Run command mvn clean install. This creates the target/book-store-application.jar file.</li>
+    <li>Build the Docker image using the command <b>docker build -t bookstore .</b> (where 'bookstore' is the name of the image).</li>
+    <li>Run the Docker image using the command <b>docker run -p 1234:8080 bookstore</b> (where 1234 is the local port to redirect the container port to, and 'bookstore' is the image name).</li>
+</ol>
 
 <h2>API Documentation</h2>
 Swagger API Documentation available at: <a href='http://localhost:8080/swagger-ui.html'>http://localhost:8080/swagger-ui.html</a>.
