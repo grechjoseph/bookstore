@@ -13,10 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static com.jg.bookstore.domain.enums.OrderStatus.*;
 import static com.jg.bookstore.domain.exception.ErrorCode.*;
@@ -34,7 +31,7 @@ public class OrderServiceImpl implements OrderService {
         log.debug("Creating Purchase Order.");
         validateOrderEntries(orderEntries);
         final PurchaseOrder purchaseOrder = new PurchaseOrder();
-        purchaseOrder.setOrderEntries(orderEntries);
+        orderEntries.forEach(purchaseOrder::addOrderEntry);
         return orderRepository.save(purchaseOrder);
     }
 
@@ -61,18 +58,21 @@ public class OrderServiceImpl implements OrderService {
         }
 
         log.debug("Clearing old Order Entries for Purchase Order with ID [{}].", orderId);
-        purchaseOrder.getOrderEntries().clear();
-        // This flush is required to save the deletion of the older items, since otherwise, the unique constraint will be hit.
+        for(Iterator<OrderEntry> featureIterator = purchaseOrder.getOrderEntries().iterator(); featureIterator.hasNext(); ) {
+            featureIterator.next();
+            featureIterator.remove();
+        }
         orderRepository.flush();
-        purchaseOrder.getOrderEntries().addAll(orderEntries);
+        log.debug("Adding new Order Entries for Purchase Order with ID [{}].", orderId);
+        orderEntries.forEach(purchaseOrder::addOrderEntry);
         purchaseOrder.setOrderStatus(CREATED);
         return orderRepository.save(purchaseOrder);
     }
 
     @Override
     public PurchaseOrder updateOrderStatus(final UUID orderId, final OrderStatus orderStatus) {
-        log.debug("Setting Purchase Order with ID [{}] to {}.", orderId, orderStatus);
         final PurchaseOrder purchaseOrder = getOrderById(orderId);
+        log.debug("Setting Purchase Order with ID [{}] from {} to {}.", orderId, purchaseOrder.getOrderStatus(), orderStatus);
         validateOrderStatusTransition(purchaseOrder, orderStatus);
 
         switch(orderStatus) {
@@ -144,16 +144,14 @@ public class OrderServiceImpl implements OrderService {
         /*
             When a PurchaseOrder is CANCELLED after being CONFIRMED:
             1. Reverse Books stock adjustments.
-            Otherwise, when CANCELLED after being CREATED, no stock was ever adjusted.
+            Otherwise, when CANCELLED after being CREATED, no stock needs adjusting.
          */
         if (purchaseOrder.getOrderStatus().equals(CONFIRMED)) {
             log.debug("Detected Purchase Order status transition [{} -> {}]. Reverting Book Stocks.", CONFIRMED, CANCELLED);
             reverseOrderStock(purchaseOrder);
-            purchaseOrder.setOrderStatus(CANCELLED);
-            return orderRepository.save(purchaseOrder);
         }
-
-        return purchaseOrder;
+        purchaseOrder.setOrderStatus(CANCELLED);
+        return orderRepository.save(purchaseOrder);
     }
 
     private void reverseOrderStock(final PurchaseOrder purchaseOrder) {
