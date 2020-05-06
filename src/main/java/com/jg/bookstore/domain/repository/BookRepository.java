@@ -15,15 +15,12 @@ public interface BookRepository extends JpaRepository<Book, UUID> {
     List<Book> findByAuthorIdAndDeletedFalse(final UUID authorId);
 
     /**
-     * Find a Book by ID and lock it for updating.
+     * Find a Book by ID and lock it for updating (returns deleted ones as well).
      * @param id The Book's ID.
      * @return The Book object retrieved.
      */
     @Query(value = "SELECT * from bookstore.book b WHERE b.id=?1 FOR UPDATE", nativeQuery = true)
     Optional<Book> findByIdAndLock(final UUID id);
-
-    @Query(value = "SELECT * from bookstore.book b WHERE b.id=?1 and b.deleted='false' FOR UPDATE", nativeQuery = true)
-    Optional<Book> findByIdAndDeletedFalseAndLock(final UUID id);
 
     Optional<Book> findByIdAndDeletedFalse(final UUID bookId);
 

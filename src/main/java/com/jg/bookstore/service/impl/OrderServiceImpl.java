@@ -102,7 +102,7 @@ public class OrderServiceImpl implements OrderService {
         });
 
         try {
-            lockAndUpdateStock(purchaseOrder.getOrderEntries());
+            lockAndSubtractStockByQuantities(purchaseOrder.getOrderEntries());
         } catch (final BaseException exception) {
                 /*
                     When an PurchaseOrder is CONFIRMED, but stock is insufficient:
@@ -158,7 +158,7 @@ public class OrderServiceImpl implements OrderService {
     private void reverseOrderStock(final PurchaseOrder purchaseOrder) {
         // Negate quantities in Order Entries for adjustment.
         purchaseOrder.getOrderEntries().forEach(orderEntry -> orderEntry.setQuantity(Math.negateExact(orderEntry.getQuantity())));
-        lockAndUpdateStock(purchaseOrder.getOrderEntries());
+        lockAndSubtractStockByQuantities(purchaseOrder.getOrderEntries());
         // Restore original quantities in Order Entries.
         purchaseOrder.getOrderEntries().forEach(orderEntry -> orderEntry.setQuantity(Math.negateExact(orderEntry.getQuantity())));
     }
@@ -170,23 +170,19 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Transactional
-    private void lockAndUpdateStock(final Set<OrderEntry> orderEntries) throws BaseException {
+    private void lockAndSubtractStockByQuantities(final Set<OrderEntry> orderEntries) throws BaseException {
         log.debug("Updating Book stocks.");
         final Set<Book> booksToUpdate = new HashSet<>();
 
         orderEntries.forEach(orderEntry -> {
-            final Book book;
+            final Book book = bookRepository.findByIdAndLock(orderEntry.getBook().getId())
+                    .orElseThrow(() -> new BaseException(BOOK_NOT_FOUND));
 
-            // If reverting (putting back), ignore whether deleted or not. Else, consider only non-deleted books for taking.
-            if(orderEntry.getQuantity() < 0) {
-                book = bookRepository.findByIdAndLock(orderEntry.getBook().getId())
-                        .orElseThrow(() -> new BaseException(BOOK_NOT_FOUND));
-            } else {
-                book = bookRepository.findByIdAndDeletedFalseAndLock(orderEntry.getBook().getId())
-                        .orElseGet(() -> {
-                            log.warn("Book with ID [{}] is no longer available.", orderEntry.getBook().getId());
-                            throw new BaseException(BOOK_NOT_FOUND);
-                        });
+            // If stock is being taken, check that the Book is not deleted.
+            // Otherwise, if stock is being put back, deleted or not should not matter.
+            if(orderEntry.getQuantity() > 0 && book.isDeleted()) {
+                log.warn("Book with ID [{}] is no longer available.", orderEntry.getBook().getId());
+                throw new BaseException(BOOK_NOT_FOUND);
             }
 
             if(book.getStock() < orderEntry.getQuantity()) {
