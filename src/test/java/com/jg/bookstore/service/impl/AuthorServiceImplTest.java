@@ -7,8 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
@@ -36,11 +34,7 @@ public class AuthorServiceImplTest {
 
     @BeforeEach
     public void beforeEach() {
-        when(authorRepository.save(any(Author.class))).thenAnswer(new Answer() {
-            public Object answer(InvocationOnMock invocation) {
-                return invocation.getArguments()[0];
-            }
-        });
+        when(authorRepository.save(any(Author.class))).thenAnswer(invocation -> invocation.getArguments()[0]);
         when(authorRepository.findByIdAndDeletedFalse(any(UUID.class))).thenReturn(Optional.of(AUTHOR));
 
         AUTHOR.setFirstName(FIRST_NAME);
@@ -107,6 +101,16 @@ public class AuthorServiceImplTest {
         verify(authorRepository).findByIdAndDeletedFalse(ID);
         verify(authorRepository).save(AUTHOR);
         assertThat(AUTHOR.isDeleted()).isTrue();
+    }
+
+    @Test
+    public void deleteAuthor_bookDoesNotExist_shouldThrowBookNotFoundException() {
+        when(authorRepository.findByIdAndDeletedFalse(ID)).thenReturn(Optional.empty());
+        assertThatThrownBy(() -> authorService.deleteAuthor(ID))
+                .isEqualTo(new BaseException(AUTHOR_NOT_FOUND));
+        verify(authorRepository).findByIdAndDeletedFalse(ID);
+        verify(authorRepository, never()).save(AUTHOR);
+        assertThat(AUTHOR.isDeleted()).isFalse();
     }
 
 }
