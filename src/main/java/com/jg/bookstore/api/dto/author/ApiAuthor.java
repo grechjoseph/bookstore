@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 @Data
@@ -11,11 +12,13 @@ import javax.validation.constraints.Size;
 public class ApiAuthor {
 
 
-    @Size(min = 2, max = 20)
+    @NotEmpty(message = "First Name must be between 2 and 20 characters.")
+    @Size(min = 2, max = 20, message = "First Name must be between 2 and 20 characters.")
     @ApiModelProperty(value = "Author's first name.")
     private final String firstName;
 
-    @Size(min = 2, max = 20)
+    @NotEmpty(message = "Last Name must be between 2 and 20 characters.")
+    @Size(min = 2, max = 20, message = "Last Name must be between 2 and 20 characters.")
     @ApiModelProperty(value = "Author's last name.")
     private final String lastName;
 

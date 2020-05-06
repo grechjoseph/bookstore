@@ -1,10 +1,10 @@
 package com.jg.bookstore.utils;
 
+import com.jg.bookstore.api.dto.author.ApiAuthor;
 import com.jg.bookstore.domain.entity.Author;
 import com.jg.bookstore.domain.entity.Book;
 import com.jg.bookstore.domain.entity.OrderEntry;
 import com.jg.bookstore.domain.entity.PurchaseOrder;
-import com.jg.bookstore.domain.enums.OrderStatus;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -32,6 +32,8 @@ public class TestUtils {
     public static PurchaseOrder ORDER = new PurchaseOrder();
     public static UUID ORDER_ID = ORDER.getId();
 
+    public static ApiAuthor API_AUTHOR = new ApiAuthor(AUTHOR_FIRST_NAME, AUTHOR_LAST_NAME);
+
     public static void reset() {
         AUTHOR.setFirstName(AUTHOR_FIRST_NAME);
         AUTHOR.setLastName(AUTHOR_LAST_NAME);
@@ -50,6 +52,8 @@ public class TestUtils {
         ORDER.getOrderEntries().clear();
         ORDER.addOrderEntry(ORDER_ENTRY);
         ORDER.setOrderStatus(CREATED);
+
+        API_AUTHOR = new ApiAuthor(AUTHOR_FIRST_NAME, AUTHOR_LAST_NAME);
     }
 
 }
