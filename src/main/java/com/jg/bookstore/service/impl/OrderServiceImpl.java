@@ -65,6 +65,7 @@ public class OrderServiceImpl implements OrderService {
         // This flush is required to save the deletion of the older items, since otherwise, the unique constraint will be hit.
         orderRepository.flush();
         purchaseOrder.getOrderEntries().addAll(orderEntries);
+        purchaseOrder.setOrderStatus(CREATED);
         return orderRepository.save(purchaseOrder);
     }
 
