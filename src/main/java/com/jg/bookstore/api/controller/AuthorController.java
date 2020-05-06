@@ -14,6 +14,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,7 +30,7 @@ public class AuthorController {
 
     @PostMapping
     @ApiOperation(value = "Create an Author.")
-    public ApiAuthorExtended createAuthor(@RequestBody final ApiAuthor author) {
+    public ApiAuthorExtended createAuthor(@RequestBody @Valid final ApiAuthor author) {
         return modelMapper.map(authorService.createAuthor(modelMapper.map(author, Author.class)), ApiAuthorExtended.class);
     }
 
@@ -47,7 +48,7 @@ public class AuthorController {
 
     @PutMapping("/{authorId}")
     @ApiOperation(value = "Update an Author.")
-    public ApiAuthorExtended updateAuthor(@PathVariable final UUID authorId, @RequestBody final ApiAuthor newValues) {
+    public ApiAuthorExtended updateAuthor(@PathVariable final UUID authorId, @RequestBody @Valid final ApiAuthor newValues) {
         return modelMapper.map(authorService.updateAuthor(authorId, modelMapper.map(newValues, Author.class)), ApiAuthorExtended.class);
     }
 
@@ -66,7 +67,7 @@ public class AuthorController {
 
     @PostMapping("/{authorId}/books")
     @ApiOperation(value = "Add a Book to an Author's collection.")
-    public ApiBookExtended createAuthorBook(@PathVariable final UUID authorId, @RequestBody final ApiBook book) {
+    public ApiBookExtended createAuthorBook(@PathVariable final UUID authorId, @RequestBody @Valid final ApiBook book) {
         return modelMapper.map(bookService.createBook(authorId, modelMapper.map(book, Book.class)), ApiBookExtended.class);
     }
 }

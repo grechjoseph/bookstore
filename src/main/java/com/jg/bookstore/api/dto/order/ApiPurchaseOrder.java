@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @ApiModel(value = "Object representing a Purchase Order being created or updated.")
 public class ApiPurchaseOrder {
 
+    @NotEmpty
     @ApiModelProperty(value = "Purchase Order's Order Entries.")
     private final List<ApiOrderEntry> orderEntries = new ArrayList<>();
 

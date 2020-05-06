@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,7 +37,7 @@ public class BookController {
 
     @PutMapping("/{bookId}")
     @ApiOperation(value = "Update a Book.")
-    public ApiBookExtended updateBook(@PathVariable final UUID bookId, @RequestBody final ApiBook newValues) {
+    public ApiBookExtended updateBook(@PathVariable final UUID bookId, @RequestBody @Valid final ApiBook newValues) {
         return modelMapper.map(bookService.updateBook(bookId, modelMapper.map(newValues, Book.class)), ApiBookExtended.class);
     }
 
