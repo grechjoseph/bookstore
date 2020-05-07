@@ -126,19 +126,19 @@ public class AuthorControllerIT {
     }
 
     @Test
-    public void updateAuthor_shouldUpdateAuthor() {
+    public void updateAuthor_shouldUpdateAuthor() throws Exception {
         authorRepository.save(AUTHOR);
         final ApiAuthor expected = new ApiAuthor("New First Name", "New Last Name");
         final ApiAuthorExtended result = doRequest(PUT, "/authors/" + AUTHOR_ID, expected, ApiAuthorExtended.class);
         assertThat(result).isEqualTo(expected);
-        assertThat(mapper.map(authorRepository.findById(AUTHOR_ID).get(), ApiAuthorExtended.class)).isEqualTo(result);
+        assertThat(mapper.map(authorRepository.findById(AUTHOR_ID).orElseThrow(Exception::new), ApiAuthorExtended.class)).isEqualTo(result);
     }
 
     @Test
-    public void deleteAuthor_shouldSoftDeleteAuthor() {
+    public void deleteAuthor_shouldSoftDeleteAuthor() throws Exception {
         authorRepository.save(AUTHOR);
         doRequest(DELETE, "/authors/" + AUTHOR_ID, null, null);
-        assertThat(authorRepository.findById(AUTHOR_ID).get().isDeleted()).isTrue();
+        assertThat(authorRepository.findById(AUTHOR_ID).orElseThrow(Exception::new).isDeleted()).isTrue();
     }
 
     @Test
