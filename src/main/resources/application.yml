@@ -6,9 +6,9 @@ logging:
 
 spring:
   datasource:
-    url: jdbc:h2:mem:bookstore
-    driverClassName: org.h2.Driver
-    username: sa
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/bookstore
+    driverClassName: com.mysql.jdbc.Driver
+    username: root
     password: password
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
