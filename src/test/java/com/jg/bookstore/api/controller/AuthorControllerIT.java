@@ -2,7 +2,10 @@ package com.jg.bookstore.api.controller;
 
 import com.jg.bookstore.api.dto.author.ApiAuthor;
 import com.jg.bookstore.api.dto.author.ApiAuthorExtended;
+import com.jg.bookstore.api.dto.book.ApiBook;
+import com.jg.bookstore.api.dto.book.ApiBookExtended;
 import com.jg.bookstore.domain.repository.AuthorRepository;
+import com.jg.bookstore.domain.repository.BookRepository;
 import com.jg.bookstore.mapper.ModelMapper;
 import com.jg.bookstore.utils.TestUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -27,6 +30,7 @@ public class AuthorControllerIT {
 
     public static final String VALIDATION_MESSAGE_AUTHOR_FIRST_NAME = "First Name must be between 2 and 20 characters.";
     public static final String VALIDATION_MESSAGE_AUTHOR_LAST_NAME = "Last Name must be between 2 and 20 characters.";
+
     @LocalServerPort
     private int port;
 
@@ -35,6 +39,9 @@ public class AuthorControllerIT {
 
     @Autowired
     private AuthorRepository authorRepository;
+
+    @Autowired
+    private BookRepository bookRepository;
 
     @Autowired
     private ModelMapper mapper;
@@ -46,6 +53,7 @@ public class AuthorControllerIT {
 
     @AfterEach
     public void afterEach() {
+        bookRepository.deleteAll();
         authorRepository.deleteAll();
     }
 
@@ -131,6 +139,24 @@ public class AuthorControllerIT {
         authorRepository.save(AUTHOR);
         doRequest(DELETE, "/authors/" + AUTHOR_ID, null, null);
         assertThat(authorRepository.findById(AUTHOR_ID).get().isDeleted()).isTrue();
+    }
+
+    @Test
+    public void getAuthorBooks_shouldReturnBooks() {
+        authorRepository.save(AUTHOR);
+        bookRepository.save(BOOK);
+        final ApiBook[] expected = new ApiBook[] { mapper.map(BOOK, ApiBook.class) };
+        final ApiBook[] result = doRequest(GET, "/authors/" + AUTHOR_ID + "/books", null, ApiBook[].class);
+        assertThat(result).isEqualTo(expected);
+    }
+
+    @Test
+    public void createAuthorBook_shouldCreateBook() {
+        authorRepository.save(AUTHOR);
+        final ApiBookExtended result = doRequest(POST, "/authors/" + AUTHOR_ID + "/books", mapper.map(BOOK, ApiBook.class), ApiBookExtended.class);
+        assertThat(result).isEqualTo(mapper.map(BOOK, ApiBookExtended.class));
+        assertThat(mapper.mapAsList(bookRepository.findByAuthorIdAndDeletedFalse(AUTHOR_ID), ApiBook.class))
+                .isEqualTo(List.of(mapper.map(BOOK, ApiBook.class)));
     }
 
     private <T> T doRequest(final HttpMethod httpMethod,
