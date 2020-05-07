@@ -81,4 +81,4 @@ To build and run a Docker image:
 </ol>
 
 <h2>API Documentation</h2>
-Swagger API Documentation available at: <a href='http://localhost:8080/swagger-ui.html'>http://localhost:8080/swagger-ui.html</a>.
+Swagger API Documentation is available on startup at: <a href='http://localhost:8080/swagger-ui.html'>http://localhost:8080/swagger-ui.html</a>.
