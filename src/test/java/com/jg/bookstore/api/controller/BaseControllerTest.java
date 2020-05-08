@@ -2,6 +2,7 @@ package com.jg.bookstore.api.controller;
 
 import com.jg.bookstore.domain.repository.AuthorRepository;
 import com.jg.bookstore.domain.repository.BookRepository;
+import com.jg.bookstore.domain.repository.OrderRepository;
 import com.jg.bookstore.utils.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,8 +28,11 @@ public class BaseControllerTest {
     @Autowired
     private BookRepository bookRepository;
 
+    @Autowired
+    private OrderRepository orderRepository;
+
     @BeforeEach
-    public void beforeEach() {
+    private void beforeEach() {
         TestUtils.reset();
     }
 
@@ -36,6 +40,7 @@ public class BaseControllerTest {
     public void afterEach() {
         bookRepository.deleteAll();
         authorRepository.deleteAll();
+        orderRepository.deleteAll();
     }
 
     protected   <T> T doRequest(final HttpMethod httpMethod,

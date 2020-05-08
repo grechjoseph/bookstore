@@ -53,7 +53,7 @@ public class AuthorControllerIT extends BaseControllerTest {
     }
 
     @Test
-    public void updateAuthor_shouldUpdateAuthor() throws Exception {
+    public void updateAuthor_shouldUpdateAndReturnAuthor() throws Exception {
         authorRepository.save(AUTHOR);
         final ApiAuthor expected = new ApiAuthor("New First Name", "New Last Name");
         final ApiAuthorExtended result = doRequest(PUT, "/authors/" + AUTHOR_ID, expected, ApiAuthorExtended.class);
