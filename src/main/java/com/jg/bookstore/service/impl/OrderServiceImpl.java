@@ -166,6 +166,10 @@ public class OrderServiceImpl implements OrderService {
         if(orderEntries.isEmpty()) {
             throw new BaseException(ORDER_EMPTY);
         }
+
+        if(orderEntries.stream().anyMatch(orderEntry -> orderEntry.getQuantity() < 1)) {
+            throw new BaseException(ORDER_ENTRY_QUANTITY_ERROR);
+        }
     }
 
     @Transactional
