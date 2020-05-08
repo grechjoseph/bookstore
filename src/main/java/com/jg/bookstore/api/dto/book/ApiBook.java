@@ -13,15 +13,15 @@ import java.math.BigDecimal;
 public class ApiBook {
 
     @Size(min = 1, max = 100)
-    @ApiModelProperty(value = "Book's name.")
+    @ApiModelProperty(value = "Book's name.", example = "Dante's Inferno" )
     private final String name;
 
     @Positive
-    @ApiModelProperty(value = "Book's available stock.")
+    @ApiModelProperty(value = "Book's available stock.", example = "100" )
     private final Integer stock;
 
     @Positive
-    @ApiModelProperty(value = "Book's base currency price.")
+    @ApiModelProperty(value = "Book's base currency price.", example = "10.95" )
     private final BigDecimal price;
 
 }

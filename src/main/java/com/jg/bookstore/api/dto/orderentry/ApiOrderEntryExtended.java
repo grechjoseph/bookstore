@@ -11,10 +11,10 @@ import java.util.UUID;
 @ApiModel(value = "Object representing an Order Entry being read.")
 public class ApiOrderEntryExtended extends ApiOrderEntry {
 
-    @ApiModelProperty(value = "Order Entry's ID.")
+    @ApiModelProperty(value = "Order Entry's ID.", example = "064f4cfb-5bcc-44e5-96cd-780830586eb8" )
     private final UUID id;
 
-    @ApiModelProperty(value = "Order Entry's Final Price (established when the Order is CONFIRMED).")
+    @ApiModelProperty(value = "Order Entry's Final Price (established when the Order is CONFIRMED).", example = "10.95" )
     private final BigDecimal finalUnitPrice;
 
     public ApiOrderEntryExtended(final UUID id,

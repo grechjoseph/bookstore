@@ -13,11 +13,11 @@ import java.util.UUID;
 public class ApiOrderEntry {
 
     @NotNull
-    @ApiModelProperty(value = "Order Entry's Book ID.")
+    @ApiModelProperty(value = "Order Entry's Book ID.", example = "064f4cfb-5bcc-44e5-96cd-780830586eb8" )
     private final UUID bookId;
 
     @Positive
-    @ApiModelProperty(value = "Order Entry's quantity.")
+    @ApiModelProperty(value = "Order Entry's quantity.", example = "1" )
     private final Integer quantity;
 
 }

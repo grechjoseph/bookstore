@@ -14,12 +14,12 @@ public class ApiAuthor {
 
     @NotEmpty(message = "First Name must be between 2 and 20 characters.")
     @Size(min = 2, max = 20, message = "First Name must be between 2 and 20 characters.")
-    @ApiModelProperty(value = "Author's first name.")
+    @ApiModelProperty(value = "Author's first name.", example = "John" )
     private final String firstName;
 
     @NotEmpty(message = "Last Name must be between 2 and 20 characters.")
     @Size(min = 2, max = 20, message = "Last Name must be between 2 and 20 characters.")
-    @ApiModelProperty(value = "Author's last name.")
+    @ApiModelProperty(value = "Author's last name.", example = "Doe" )
     private final String lastName;
 
 }

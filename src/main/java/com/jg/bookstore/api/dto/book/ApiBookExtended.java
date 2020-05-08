@@ -11,7 +11,7 @@ import java.util.UUID;
 @ApiModel(value = "Object representing a Book being read.")
 public class ApiBookExtended extends ApiBook {
 
-    @ApiModelProperty(value = "Book's ID.")
+    @ApiModelProperty(value = "Book's ID.", example = "064f4cfb-5bcc-44e5-96cd-780830586eb8" )
     private final UUID id;
 
     public ApiBookExtended(final UUID id,

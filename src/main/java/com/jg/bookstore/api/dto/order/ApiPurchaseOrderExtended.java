@@ -13,10 +13,10 @@ import java.util.UUID;
 @ApiModel(value = "Object representing a Purchase Order being read.")
 public class ApiPurchaseOrderExtended {
 
-    @ApiModelProperty(value = "Purchase Order's ID.")
+    @ApiModelProperty(value = "Purchase Order's ID.", example = "064f4cfb-5bcc-44e5-96cd-780830586eb8" )
     private final UUID id;
 
-    @ApiModelProperty(value = "Purchase Order's status.")
+    @ApiModelProperty(value = "Purchase Order's status.", example = "CREATED" )
     private final OrderStatus orderStatus;
 
     @ApiModelProperty(value = "Purchase Order's Order Entries.")
