@@ -1,6 +1,6 @@
 package com.jg.bookstore.utils;
 
-import com.jg.bookstore.api.dto.author.ApiAuthor;
+import com.jg.bookstore.api.model.author.ApiAuthor;
 import com.jg.bookstore.domain.entity.Author;
 import com.jg.bookstore.domain.entity.Book;
 import com.jg.bookstore.domain.entity.OrderEntry;

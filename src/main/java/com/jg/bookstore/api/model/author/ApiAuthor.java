@@ -1,4 +1,4 @@
-package com.jg.bookstore.api.dto.author;
+package com.jg.bookstore.api.model.author;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

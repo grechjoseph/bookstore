@@ -1,6 +1,6 @@
 package com.jg.bookstore.mapper;
 
-import com.jg.bookstore.api.dto.orderentry.ApiOrderEntryExtended;
+import com.jg.bookstore.api.model.orderentry.ApiOrderEntryExtended;
 import com.jg.bookstore.domain.entity.OrderEntry;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

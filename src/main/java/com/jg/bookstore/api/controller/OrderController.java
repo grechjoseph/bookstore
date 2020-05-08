@@ -1,7 +1,7 @@
 package com.jg.bookstore.api.controller;
 
-import com.jg.bookstore.api.dto.order.ApiPurchaseOrderExtended;
-import com.jg.bookstore.api.dto.orderentry.ApiOrderEntry;
+import com.jg.bookstore.api.model.order.ApiPurchaseOrderExtended;
+import com.jg.bookstore.api.model.orderentry.ApiOrderEntry;
 import com.jg.bookstore.domain.entity.OrderEntry;
 import com.jg.bookstore.domain.enums.OrderStatus;
 import com.jg.bookstore.mapper.ModelMapper;

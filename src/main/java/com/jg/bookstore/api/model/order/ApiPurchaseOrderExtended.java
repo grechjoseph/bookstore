@@ -1,6 +1,6 @@
-package com.jg.bookstore.api.dto.order;
+package com.jg.bookstore.api.model.order;
 
-import com.jg.bookstore.api.dto.orderentry.ApiOrderEntryExtended;
+import com.jg.bookstore.api.model.orderentry.ApiOrderEntryExtended;
 import com.jg.bookstore.domain.enums.OrderStatus;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

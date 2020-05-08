@@ -1,9 +1,9 @@
 package com.jg.bookstore.api.controller;
 
-import com.jg.bookstore.api.dto.author.ApiAuthor;
-import com.jg.bookstore.api.dto.author.ApiAuthorExtended;
-import com.jg.bookstore.api.dto.book.ApiBook;
-import com.jg.bookstore.api.dto.book.ApiBookExtended;
+import com.jg.bookstore.api.model.author.ApiAuthor;
+import com.jg.bookstore.api.model.author.ApiAuthorExtended;
+import com.jg.bookstore.api.model.book.ApiBook;
+import com.jg.bookstore.api.model.book.ApiBookExtended;
 import com.jg.bookstore.domain.entity.Author;
 import com.jg.bookstore.domain.entity.Book;
 import com.jg.bookstore.mapper.ModelMapper;

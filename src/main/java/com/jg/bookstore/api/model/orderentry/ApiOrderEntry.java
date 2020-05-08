@@ -1,4 +1,4 @@
-package com.jg.bookstore.api.dto.orderentry;
+package com.jg.bookstore.api.model.orderentry;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

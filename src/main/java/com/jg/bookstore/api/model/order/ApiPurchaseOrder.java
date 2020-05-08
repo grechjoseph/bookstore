@@ -1,6 +1,6 @@
-package com.jg.bookstore.api.dto.order;
+package com.jg.bookstore.api.model.order;
 
-import com.jg.bookstore.api.dto.orderentry.ApiOrderEntry;
+import com.jg.bookstore.api.model.orderentry.ApiOrderEntry;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
