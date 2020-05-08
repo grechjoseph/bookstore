@@ -14,7 +14,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class BaseControllerTest {
+public abstract class BaseControllerTest {
 
     @LocalServerPort
     protected int port;
@@ -32,15 +32,15 @@ public class BaseControllerTest {
     private OrderRepository orderRepository;
 
     @BeforeEach
-    private void beforeEach() {
+    final public void beforeEach() {
         TestUtils.reset();
     }
 
     @AfterEach
     public void afterEach() {
+        orderRepository.deleteAll();
         bookRepository.deleteAll();
         authorRepository.deleteAll();
-        orderRepository.deleteAll();
     }
 
     protected   <T> T doRequest(final HttpMethod httpMethod,

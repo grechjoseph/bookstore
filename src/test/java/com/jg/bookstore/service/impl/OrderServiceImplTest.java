@@ -56,7 +56,15 @@ public class OrderServiceImplTest {
     @Test
     public void createOrder_noOrderEntries_shouldThrowOrderEmptyException() {
         assertThatThrownBy(() -> orderService.createOrder(Set.of()))
-            .isEqualTo(new BaseException(ORDER_EMPTY));
+                .isEqualTo(new BaseException(ORDER_EMPTY));
+        verify(mockOrderRepository, never()).save(any(PurchaseOrder.class));
+    }
+
+    @Test
+    public void createOrder_zeroQuantity_shouldThrowOrderEntryQuantityException() {
+        ORDER_ENTRY.setQuantity(0);
+        assertThatThrownBy(() -> orderService.createOrder(Set.of(ORDER_ENTRY)))
+                .isEqualTo(new BaseException(ORDER_ENTRY_QUANTITY_ERROR));
         verify(mockOrderRepository, never()).save(any(PurchaseOrder.class));
     }
 
@@ -106,6 +114,15 @@ public class OrderServiceImplTest {
     public void updateOrderItems_emptyOrderEntries_shouldThrowOrderEmptyException() {
         assertThatThrownBy(() -> orderService.updateOrderItems(ORDER_ID, Set.of()))
                 .isEqualTo(new BaseException(ORDER_EMPTY));
+        verify(mockOrderRepository, never()).flush();
+        verify(mockOrderRepository, never()).save(any(PurchaseOrder.class));
+    }
+
+    @Test
+    public void updateOrderItems_zeroQuantity_shouldThrowOrderEntryQuantityException() {
+        ORDER_ENTRY.setQuantity(0);
+        assertThatThrownBy(() -> orderService.updateOrderItems(ORDER_ID, Set.of(ORDER_ENTRY)))
+                .isEqualTo(new BaseException(ORDER_ENTRY_QUANTITY_ERROR));
         verify(mockOrderRepository, never()).flush();
         verify(mockOrderRepository, never()).save(any(PurchaseOrder.class));
     }

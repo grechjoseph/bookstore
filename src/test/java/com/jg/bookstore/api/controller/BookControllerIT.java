@@ -27,7 +27,7 @@ public class BookControllerIT extends BaseControllerTest {
     private ModelMapper mapper;
 
     @BeforeEach
-    public void beforeEach() {
+    public void before() {
         authorRepository.save(AUTHOR);
         bookRepository.save(BOOK);
     }

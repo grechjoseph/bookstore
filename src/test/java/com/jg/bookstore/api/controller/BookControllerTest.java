@@ -28,7 +28,7 @@ public class BookControllerTest extends BaseControllerTest {
     private BookRepository bookRepository;
 
     @BeforeEach
-    public void beforeEach() {
+    public void before() {
         authorRepository.save(AUTHOR);
         bookRepository.save(BOOK);
     }
