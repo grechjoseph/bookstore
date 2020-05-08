@@ -1,17 +1,16 @@
 package com.jg.bookstore.service.impl;
 
+import com.jg.bookstore.BaseTestContext;
 import com.jg.bookstore.domain.entity.OrderEntry;
 import com.jg.bookstore.domain.entity.PurchaseOrder;
 import com.jg.bookstore.domain.enums.OrderStatus;
 import com.jg.bookstore.domain.exception.BaseException;
 import com.jg.bookstore.domain.repository.BookRepository;
 import com.jg.bookstore.domain.repository.OrderRepository;
-import com.jg.bookstore.utils.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.*;
 
@@ -23,8 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
-public class OrderServiceImplTest {
+public class OrderServiceImplTest extends BaseTestContext {
 
     @Mock
     private OrderRepository mockOrderRepository;
@@ -36,8 +34,7 @@ public class OrderServiceImplTest {
     private OrderServiceImpl orderService;
 
     @BeforeEach
-    public void beforeEach() {
-        TestUtils.reset();
+    public void before() {
         when(mockOrderRepository.findById(ORDER_ID)).thenReturn(Optional.of(ORDER));
         when(mockOrderRepository.findAll()).thenReturn(List.of(ORDER));
         when(mockOrderRepository.save(any(PurchaseOrder.class))).thenAnswer(invocation -> invocation.getArguments()[0]);

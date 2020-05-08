@@ -1,4 +1,4 @@
-package com.jg.bookstore.api.controller;
+package com.jg.bookstore;
 
 import com.jg.bookstore.domain.repository.AuthorRepository;
 import com.jg.bookstore.domain.repository.BookRepository;
@@ -14,7 +14,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public abstract class BaseControllerTest {
+public abstract class BaseTestContext {
 
     @LocalServerPort
     protected int port;

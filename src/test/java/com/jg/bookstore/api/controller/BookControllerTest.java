@@ -1,5 +1,6 @@
 package com.jg.bookstore.api.controller;
 
+import com.jg.bookstore.BaseTestContext;
 import com.jg.bookstore.api.model.book.ApiBook;
 import com.jg.bookstore.domain.repository.AuthorRepository;
 import com.jg.bookstore.domain.repository.BookRepository;
@@ -15,7 +16,7 @@ import static com.jg.bookstore.utils.TestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.PUT;
 
-public class BookControllerTest extends BaseControllerTest {
+public class BookControllerTest extends BaseTestContext {
 
     private static final String VALIDATION_MESSAGE_BOOK_NAME = "Book's Name has to be between 1 and 100 characters.";
     private static final String VALIDATION_MESSAGE_BOOK_STOCK = "Book's Stock has to be positive.";

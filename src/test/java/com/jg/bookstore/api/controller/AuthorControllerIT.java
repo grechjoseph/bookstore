@@ -1,5 +1,6 @@
 package com.jg.bookstore.api.controller;
 
+import com.jg.bookstore.BaseTestContext;
 import com.jg.bookstore.api.model.author.ApiAuthor;
 import com.jg.bookstore.api.model.author.ApiAuthorExtended;
 import com.jg.bookstore.api.model.book.ApiBook;
@@ -16,7 +17,7 @@ import static com.jg.bookstore.utils.TestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.*;
 
-public class AuthorControllerIT extends BaseControllerTest {
+public class AuthorControllerIT extends BaseTestContext {
 
     @Autowired
     private AuthorRepository authorRepository;

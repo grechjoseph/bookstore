@@ -1,9 +1,8 @@
 package com.jg.bookstore.api.controller;
 
-import com.jg.bookstore.api.model.order.ApiPurchaseOrder;
+import com.jg.bookstore.BaseTestContext;
 import com.jg.bookstore.api.model.order.ApiPurchaseOrderExtended;
 import com.jg.bookstore.api.model.orderentry.ApiOrderEntry;
-import com.jg.bookstore.domain.enums.OrderStatus;
 import com.jg.bookstore.domain.repository.AuthorRepository;
 import com.jg.bookstore.domain.repository.BookRepository;
 import com.jg.bookstore.domain.repository.OrderRepository;
@@ -17,7 +16,7 @@ import static com.jg.bookstore.utils.TestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.*;
 
-public class OrderControllerIT extends BaseControllerTest {
+public class OrderControllerIT extends BaseTestContext {
 
     @Autowired
     private AuthorRepository authorRepository;

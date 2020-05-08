@@ -1,5 +1,6 @@
 package com.jg.bookstore.api.controller;
 
+import com.jg.bookstore.BaseTestContext;
 import com.jg.bookstore.api.model.author.ApiAuthor;
 import com.jg.bookstore.api.model.book.ApiBook;
 import com.jg.bookstore.domain.repository.AuthorRepository;
@@ -15,7 +16,7 @@ import static com.jg.bookstore.utils.TestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.POST;
 
-public class AuthorControllerTest extends BaseControllerTest {
+public class AuthorControllerTest extends BaseTestContext {
 
     private static final String VALIDATION_MESSAGE_AUTHOR_FIRST_NAME = "First Name must be between 2 and 20 characters.";
     private static final String VALIDATION_MESSAGE_AUTHOR_LAST_NAME = "Last Name must be between 2 and 20 characters.";

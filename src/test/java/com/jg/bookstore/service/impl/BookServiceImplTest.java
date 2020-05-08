@@ -1,5 +1,6 @@
 package com.jg.bookstore.service.impl;
 
+import com.jg.bookstore.BaseTestContext;
 import com.jg.bookstore.domain.entity.Book;
 import com.jg.bookstore.domain.exception.BaseException;
 import com.jg.bookstore.domain.repository.BookRepository;
@@ -8,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,8 +20,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
-public class BookServiceImplTest {
+public class BookServiceImplTest extends BaseTestContext {
 
     @Mock
     private AuthorService mockAuthorService;
@@ -33,7 +32,7 @@ public class BookServiceImplTest {
     private BookServiceImpl bookService;
 
     @BeforeEach
-    public void beforeEach() {
+    public void before() {
         when(mockAuthorService.getAuthorById(AUTHOR_ID)).thenReturn(AUTHOR);
         when(mockBookRepository.findByIdAndDeletedFalse(BOOK_ID)).thenReturn(Optional.of(BOOK));
         when(mockBookRepository.findByDeletedFalse()).thenReturn(List.of(BOOK));
