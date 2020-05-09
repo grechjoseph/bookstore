@@ -53,6 +53,9 @@ BookStoreApplication is a microservice providing endpoints to manage Authors, th
     </li>
 </ol>
 
+<h3>Forex</h3>
+When a price is returned, this is returned in the applications' base currency (default EUR). To also display the prices in another currency, pass header "display-currency" with a currency code as a value (Eg: GBP) to have also the converted prices in that currency, in addition to the base currency price.
+
 <h2>Technologies Used</h2>
 <ul>
     <li>Spring Boot Web</li>
@@ -64,6 +67,7 @@ BookStoreApplication is a microservice providing endpoints to manage Authors, th
     <li>H2</li>
     <li>Flyway</li>
     <li>Swagger API Documentation</li>
+    <li>Feign</li>
 </ul>
 
 <h2>Running the Application</h2>

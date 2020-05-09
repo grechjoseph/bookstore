@@ -10,5 +10,6 @@ import java.util.Currency;
 public class BookStoreConfigProperties {
 
     private Currency baseCurrency;
+    private String forexUpdateCron;
 
 }

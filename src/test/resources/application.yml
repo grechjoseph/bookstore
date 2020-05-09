@@ -30,6 +30,10 @@ spring:
     validate-on-migrate: false
     locations: classpath:/db/migration
 
+bookstore:
+  base-currency: ${BASE_CURRENCY:EUR}
+  forex-update-cron: ${FOREX_UPDATE_CRON:0 */10 * ? * *}
+
 ---
 
 spring:

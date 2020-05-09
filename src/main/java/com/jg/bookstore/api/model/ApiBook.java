@@ -30,4 +30,8 @@ public class ApiBook {
     @ApiModelProperty(value = "Book's base currency price.", example = "10.95" )
     private BigDecimal price;
 
+    @Positive(message = "Book's Converted Price has to be positive.")
+    @ApiModelProperty(value = "Book's base currency price.", example = "10.95" )
+    private BigDecimal convertedPrice;
+
 }

@@ -8,6 +8,9 @@ import com.jg.bookstore.domain.entity.Author;
 import com.jg.bookstore.domain.entity.Book;
 import com.jg.bookstore.domain.entity.OrderEntry;
 import com.jg.bookstore.domain.entity.PurchaseOrder;
+import com.jg.bookstore.mapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,6 +18,7 @@ import java.util.UUID;
 
 import static com.jg.bookstore.domain.enums.OrderStatus.CREATED;
 
+@Component
 public class TestUtils {
 
     public static Author AUTHOR = new Author();
@@ -41,6 +45,13 @@ public class TestUtils {
     public static ApiOrderEntry API_ORDER_ENTRY = new ApiOrderEntry();
     public static ApiPurchaseOrder API_PURCHASE_ORDER = new ApiPurchaseOrder();
 
+    private static ModelMapper mapper;
+
+    @Autowired
+    public void setModelMapper(final ModelMapper modelMapper) {
+        mapper = modelMapper;
+    }
+
     public static void reset() {
         AUTHOR.setFirstName(AUTHOR_FIRST_NAME);
         AUTHOR.setLastName(AUTHOR_LAST_NAME);
@@ -60,23 +71,11 @@ public class TestUtils {
         ORDER.addOrderEntry(ORDER_ENTRY);
         ORDER.setOrderStatus(CREATED);
 
-        API_AUTHOR.setId(AUTHOR_ID);
-        API_AUTHOR.setFirstName(AUTHOR_FIRST_NAME);
-        API_AUTHOR.setLastName(AUTHOR_LAST_NAME);
-
-        API_BOOK.setId(BOOK_ID);
-        API_BOOK.setName(BOOK_NAME);
-        API_BOOK.setStock(BOOK_STOCK);
-        API_BOOK.setPrice(BOOK_PRICE);
-
-        API_ORDER_ENTRY.setId(ORDER_ENTRY_ID);
-        API_ORDER_ENTRY.setBookId(BOOK_ID);
-        API_ORDER_ENTRY.setQuantity(ORDER_ENTRY_QUANTITY);
-        API_ORDER_ENTRY.setFinalUnitPrice(ORDER_ENTRY_FINAL_UNIT_PRICE);
-
-        API_PURCHASE_ORDER.setId(ORDER_ID);
-        API_PURCHASE_ORDER.setOrderEntries(List.of(API_ORDER_ENTRY));
-        API_PURCHASE_ORDER.setOrderStatus(ORDER.getOrderStatus());
+        API_AUTHOR = mapper.map(AUTHOR, ApiAuthor.class);
+        API_BOOK = mapper.map(BOOK, ApiBook.class);
+        API_ORDER_ENTRY = mapper.map(ORDER_ENTRY, ApiOrderEntry.class);
+        API_PURCHASE_ORDER = mapper.map(ORDER, ApiPurchaseOrder.class);
+        API_PURCHASE_ORDER.setOrderEntries(List.of( API_ORDER_ENTRY ));
     }
 
 }

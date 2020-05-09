@@ -27,4 +27,7 @@ public class ApiOrderEntry {
     @ApiModelProperty(value = "Order Entry's Final Price (established when the Order is CONFIRMED).", example = "10.95" )
     private BigDecimal finalUnitPrice;
 
+    @ApiModelProperty(value = "Order Entry's Converted Final Price (established when the Order is CONFIRMED).", example = "10.95" )
+    private BigDecimal convertedFinalUnitPrice;
+
 }

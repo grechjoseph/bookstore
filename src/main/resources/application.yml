@@ -32,6 +32,7 @@ spring:
 
 bookstore:
   base-currency: ${BASE_CURRENCY:EUR}
+  forex-update-cron: ${FOREX_UPDATE_CRON:0 */10 * ? * *}
 
 ---
 

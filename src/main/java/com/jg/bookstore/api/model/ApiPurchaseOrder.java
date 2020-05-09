@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -23,5 +24,11 @@ public class ApiPurchaseOrder {
 
     @ApiModelProperty(value = "Purchase Order's status.", example = "CREATED" )
     private OrderStatus orderStatus;
+
+    @ApiModelProperty(value = "Purchase Order's Total Price in Base Currency.", example = "10.00" )
+    private BigDecimal totalPrice;
+
+    @ApiModelProperty(value = "Purchase Order's Total Price in Display Currency.", example = "8.50" )
+    private BigDecimal convertedPrice;
 
 }
