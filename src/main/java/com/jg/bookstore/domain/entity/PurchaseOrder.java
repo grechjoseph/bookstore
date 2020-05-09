@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.EAGER;
 
 @Data
 @Entity
@@ -20,7 +21,7 @@ public class PurchaseOrder {
 
     private LocalDateTime dateTime = LocalDateTime.now();
 
-    @OneToMany(cascade = ALL, orphanRemoval = true)
+    @OneToMany(cascade = ALL, orphanRemoval = true, fetch = EAGER)
     @JoinColumn(name = "purchase_order_id", nullable = false) // nullable = false to populate FK on OrderEntry.
     private Set<OrderEntry> orderEntries = new HashSet<>();
 

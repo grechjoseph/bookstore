@@ -3,14 +3,17 @@ package com.jg.bookstore.api.controller;
 import com.jg.bookstore.BaseTestContext;
 import com.jg.bookstore.api.model.ApiOrderEntry;
 import com.jg.bookstore.api.model.ApiPurchaseOrder;
+import com.jg.bookstore.domain.entity.PurchaseOrder;
 import com.jg.bookstore.domain.repository.AuthorRepository;
 import com.jg.bookstore.domain.repository.BookRepository;
 import com.jg.bookstore.domain.repository.OrderRepository;
+import com.jg.bookstore.mapper.ModelMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.jg.bookstore.domain.enums.OrderStatus.CONFIRMED;
+import static com.jg.bookstore.domain.enums.OrderStatus.CREATED;
 import static com.jg.bookstore.utils.TestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.*;
@@ -25,6 +28,9 @@ public class OrderControllerIT extends BaseTestContext {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private ModelMapper mapper;
 
     @BeforeEach
     public void before() {
@@ -43,6 +49,11 @@ public class OrderControllerIT extends BaseTestContext {
             assertThat(orderEntry.getQuantity()).isEqualTo(ORDER_ENTRY.getQuantity());
         });
         assertThat(result.getOrderStatus()).isEqualTo(expected.getOrderStatus());
+        final PurchaseOrder purchaseOrder = orderRepository.findById(result.getId()).get();
+        assertThat(purchaseOrder.getOrderStatus()).isEqualTo(CREATED);
+        assertThat(purchaseOrder.getOrderEntries().size()).isEqualTo(1);
+        assertThat(purchaseOrder.getOrderEntries().stream().findFirst().get().getBook()).isEqualTo(BOOK);
+        assertThat(purchaseOrder.getOrderEntries().stream().findFirst().get().getQuantity()).isEqualTo(ORDER_ENTRY_QUANTITY);
     }
 
     @Test
@@ -63,7 +74,8 @@ public class OrderControllerIT extends BaseTestContext {
     @Test
     public void updateOrderItems_shouldUpdateAndReturnOrder() {
         orderRepository.save(ORDER);
-        API_ORDER_ENTRY.setQuantity(10);
+        final int newQuantity = 10;
+        API_ORDER_ENTRY.setQuantity(newQuantity);
         final ApiOrderEntry[] requestBody = { API_ORDER_ENTRY };
         final ApiPurchaseOrder result = doRequest(PUT, "/orders/" + ORDER_ID, requestBody, ApiPurchaseOrder.class);
         assertThat(result.getOrderEntries().size()).isEqualTo(ORDER.getOrderEntries().size());
@@ -72,6 +84,11 @@ public class OrderControllerIT extends BaseTestContext {
             assertThat(orderEntry.getQuantity()).isEqualTo(API_ORDER_ENTRY.getQuantity());
         });
         assertThat(result.getOrderStatus()).isEqualTo(ORDER.getOrderStatus());
+        final PurchaseOrder purchaseOrder = orderRepository.findById(ORDER_ID).get();
+        assertThat(purchaseOrder.getOrderEntries().size()).isEqualTo(1);
+        assertThat(purchaseOrder.getOrderEntries().stream().findFirst().get().getBook()).isEqualTo(BOOK);
+        assertThat(purchaseOrder.getOrderEntries().stream()
+                .allMatch(orderEntry -> orderEntry.getQuantity().equals(newQuantity))).isTrue();
     }
 
     @Test
@@ -81,6 +98,7 @@ public class OrderControllerIT extends BaseTestContext {
         API_PURCHASE_ORDER.setOrderStatus(CONFIRMED);
         API_ORDER_ENTRY.setFinalUnitPrice(BOOK_PRICE);
         assertThat(result).isEqualTo(API_PURCHASE_ORDER);
+        assertThat(mapper.map(orderRepository.findById(ORDER_ID).get(), ApiPurchaseOrder.class)).isEqualTo(API_PURCHASE_ORDER);
     }
 
 }

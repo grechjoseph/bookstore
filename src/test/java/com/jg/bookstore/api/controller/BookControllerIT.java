@@ -4,6 +4,7 @@ import com.jg.bookstore.BaseTestContext;
 import com.jg.bookstore.api.model.ApiBook;
 import com.jg.bookstore.domain.repository.AuthorRepository;
 import com.jg.bookstore.domain.repository.BookRepository;
+import com.jg.bookstore.mapper.ModelMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class BookControllerIT extends BaseTestContext {
 
     @Autowired
     private BookRepository bookRepository;
+
+    @Autowired
+    private ModelMapper mapper;
 
     @BeforeEach
     public void before() {
@@ -48,6 +52,7 @@ public class BookControllerIT extends BaseTestContext {
         API_BOOK.setName(newName);
         final ApiBook result = doRequest(PUT, "/books/" + BOOK_ID, API_BOOK, ApiBook.class);
         assertThat(result).isEqualTo(API_BOOK);
+        assertThat(mapper.map(bookRepository.findById(BOOK_ID).get(), ApiBook.class)).isEqualTo(API_BOOK);
     }
 
     @Test
