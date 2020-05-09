@@ -1,7 +1,7 @@
 package com.jg.bookstore.api.controller;
 
 import com.jg.bookstore.BaseTestContext;
-import com.jg.bookstore.api.model.book.ApiBook;
+import com.jg.bookstore.api.model.ApiBook;
 import com.jg.bookstore.domain.repository.AuthorRepository;
 import com.jg.bookstore.domain.repository.BookRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,19 +36,22 @@ public class BookControllerTest extends BaseTestContext {
 
     @Test
     public void updateBook_nullName_shouldReturnNameError() {
-        Map<String, Object> result = doRequest(PUT, "/books/" + BOOK_ID, new ApiBook(null, BOOK.getStock(), BOOK.getPrice()), Map.class);
+        API_BOOK.setName(null);
+        Map<String, Object> result = doRequest(PUT, "/books/" + BOOK_ID, API_BOOK, Map.class);
         assertThat(((List<String>)result.get("errors"))).contains(VALIDATION_MESSAGE_BOOK_NAME);
     }
 
     @Test
-    public void updateBook_zeroStock_shouldReturnStockError() {
-        Map<String, Object> result = doRequest(PUT, "/books/" + BOOK_ID, new ApiBook(BOOK.getName(), -1, BOOK.getPrice()), Map.class);
+    public void updateBook_negativeStock_shouldReturnStockError() {
+        API_BOOK.setStock(-1);
+        Map<String, Object> result = doRequest(PUT, "/books/" + BOOK_ID, API_BOOK, Map.class);
         assertThat(((List<String>)result.get("errors"))).contains(VALIDATION_MESSAGE_BOOK_STOCK);
     }
 
     @Test
     public void updateBook_negativePrice_shouldReturnPriceError() {
-        Map<String, Object> result = doRequest(PUT, "/books/" + BOOK_ID, new ApiBook(BOOK.getName(), BOOK.getStock(), BigDecimal.valueOf(-1.00)), Map.class);
+        API_BOOK.setPrice(BigDecimal.valueOf(-1.00));
+        Map<String, Object> result = doRequest(PUT, "/books/" + BOOK_ID, API_BOOK, Map.class);
         assertThat(((List<String>)result.get("errors"))).contains(VALIDATION_MESSAGE_BOOK_PRICE);
     }
 

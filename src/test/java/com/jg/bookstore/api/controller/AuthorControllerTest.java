@@ -1,8 +1,7 @@
 package com.jg.bookstore.api.controller;
 
 import com.jg.bookstore.BaseTestContext;
-import com.jg.bookstore.api.model.author.ApiAuthor;
-import com.jg.bookstore.api.model.book.ApiBook;
+import com.jg.bookstore.api.model.ApiAuthor;
 import com.jg.bookstore.domain.repository.AuthorRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,43 +31,49 @@ public class AuthorControllerTest extends BaseTestContext {
 
     @Test
     public void createAuthor_shortFirstName_shouldReturnFirstNameError() {
-        final Map<String, Object> result = doRequest(POST,"/authors", new ApiAuthor("a", AUTHOR_LAST_NAME), Map.class);
+        API_AUTHOR.setFirstName("a");
+        final Map<String, Object> result = doRequest(POST,"/authors", API_AUTHOR, Map.class);
         assertThat(((List<String>)result.get("errors"))).contains(VALIDATION_MESSAGE_AUTHOR_FIRST_NAME);
     }
 
     @Test
     public void createAuthor_longFirstName_shouldReturnFirstNameError() {
-        final Map<String, Object> result = doRequest(POST,"/authors", new ApiAuthor("This is a very long first name.", AUTHOR_LAST_NAME), Map.class);
+        API_AUTHOR.setFirstName("This is a very long first name.");
+        final Map<String, Object> result = doRequest(POST,"/authors", API_AUTHOR, Map.class);
         assertThat(((List<String>)result.get("errors"))).contains(VALIDATION_MESSAGE_AUTHOR_FIRST_NAME);
     }
 
     @Test
     public void createAuthor_nullFirstName_shouldReturnFirstNameError() {
-        final Map<String, Object> result = doRequest(POST,"/authors", new ApiAuthor(null, AUTHOR_LAST_NAME), Map.class);
+        API_AUTHOR.setFirstName(null);
+        final Map<String, Object> result = doRequest(POST,"/authors", API_AUTHOR, Map.class);
         assertThat(((List<String>)result.get("errors"))).contains(VALIDATION_MESSAGE_AUTHOR_FIRST_NAME);
     }
 
     @Test
     public void createAuthor_shortLastName_shouldReturnLastNameError() {
-        final Map<String, Object> result = doRequest(POST,"/authors", new ApiAuthor(AUTHOR_FIRST_NAME, "a"), Map.class);
+        API_AUTHOR.setLastName("a");
+        final Map<String, Object> result = doRequest(POST,"/authors", API_AUTHOR, Map.class);
         assertThat(((List<String>)result.get("errors"))).contains(VALIDATION_MESSAGE_AUTHOR_LAST_NAME);
     }
 
     @Test
     public void createAuthor_longLastName_shouldReturnLastNameError() {
-        final Map<String, Object> result = doRequest(POST,"/authors", new ApiAuthor(AUTHOR_FIRST_NAME, "This is a very long last name."), Map.class);
+        API_AUTHOR.setLastName("This is a very long last name.");
+        final Map<String, Object> result = doRequest(POST,"/authors", API_AUTHOR, Map.class);
         assertThat(((List<String>)result.get("errors"))).contains(VALIDATION_MESSAGE_AUTHOR_LAST_NAME);
     }
 
     @Test
     public void createAuthor_nullLastName_shouldReturnLastNameError() {
-        final Map<String, Object> result = doRequest(POST,"/authors", new ApiAuthor(AUTHOR_FIRST_NAME, null), Map.class);
+        API_AUTHOR.setLastName(null);
+        final Map<String, Object> result = doRequest(POST,"/authors", API_AUTHOR, Map.class);
         assertThat(((List<String>)result.get("errors"))).contains(VALIDATION_MESSAGE_AUTHOR_LAST_NAME);
     }
 
     @Test
     public void createAuthor_nullFirstNameAndLastName_shouldReturnFirstNameAndLastNameError() {
-        final Map<String, Object> result = doRequest(POST,"/authors", new ApiAuthor(null, null), Map.class);
+        final Map<String, Object> result = doRequest(POST,"/authors", new ApiAuthor(), Map.class);
         assertThat(((List<String>)result.get("errors"))).contains(VALIDATION_MESSAGE_AUTHOR_FIRST_NAME);
         assertThat(((List<String>)result.get("errors"))).contains(VALIDATION_MESSAGE_AUTHOR_LAST_NAME);
     }
@@ -76,21 +81,24 @@ public class AuthorControllerTest extends BaseTestContext {
     @Test
     public void createAuthorBook_nullName_shouldReturnNameError() {
         authorRepository.save(AUTHOR);
-        Map<String, Object> result = doRequest(POST, "/authors/" + AUTHOR_ID + "/books", new ApiBook(null, BOOK.getStock(), BOOK.getPrice()), Map.class);
+        API_BOOK.setName(null);
+        Map<String, Object> result = doRequest(POST, "/authors/" + AUTHOR_ID + "/books", API_BOOK, Map.class);
         assertThat(((List<String>)result.get("errors"))).contains(VALIDATION_MESSAGE_BOOK_NAME);
     }
 
     @Test
     public void createAuthorBook_zeroStock_shouldReturnStockError() {
         authorRepository.save(AUTHOR);
-        Map<String, Object> result = doRequest(POST, "/authors/" + AUTHOR_ID + "/books", new ApiBook(BOOK.getName(), -1, BOOK.getPrice()), Map.class);
+        API_BOOK.setStock(-1);
+        Map<String, Object> result = doRequest(POST, "/authors/" + AUTHOR_ID + "/books", API_BOOK, Map.class);
         assertThat(((List<String>)result.get("errors"))).contains(VALIDATION_MESSAGE_BOOK_STOCK);
     }
 
     @Test
     public void createAuthorBook_negativePrice_shouldReturnPriceError() {
         authorRepository.save(AUTHOR);
-        Map<String, Object> result = doRequest(POST, "/authors/" + AUTHOR_ID + "/books", new ApiBook(BOOK.getName(), BOOK.getStock(), BigDecimal.valueOf(-1.00)), Map.class);
+        API_BOOK.setPrice(BigDecimal.valueOf(-1.00));
+        Map<String, Object> result = doRequest(POST, "/authors/" + AUTHOR_ID + "/books", API_BOOK, Map.class);
         assertThat(((List<String>)result.get("errors"))).contains(VALIDATION_MESSAGE_BOOK_PRICE);
     }
 

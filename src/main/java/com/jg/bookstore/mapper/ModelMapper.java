@@ -1,6 +1,6 @@
 package com.jg.bookstore.mapper;
 
-import com.jg.bookstore.api.model.orderentry.ApiOrderEntryExtended;
+import com.jg.bookstore.api.model.ApiOrderEntry;
 import com.jg.bookstore.domain.entity.OrderEntry;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class ModelMapper extends ConfigurableMapper {
     }
 
     private void registerClassMaps() {
-        mapperFactory.registerClassMap(mapperFactory.classMap(OrderEntry.class, ApiOrderEntryExtended.class)
+        mapperFactory.registerClassMap(mapperFactory.classMap(OrderEntry.class, ApiOrderEntry.class)
                 .field("book.id", "bookId")
                 .byDefault()
                 .toClassMap());

@@ -1,11 +1,9 @@
 package com.jg.bookstore.api.controller;
 
 import com.jg.bookstore.BaseTestContext;
-import com.jg.bookstore.api.model.book.ApiBook;
-import com.jg.bookstore.api.model.book.ApiBookExtended;
+import com.jg.bookstore.api.model.ApiBook;
 import com.jg.bookstore.domain.repository.AuthorRepository;
 import com.jg.bookstore.domain.repository.BookRepository;
-import com.jg.bookstore.mapper.ModelMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +22,6 @@ public class BookControllerIT extends BaseTestContext {
     @Autowired
     private BookRepository bookRepository;
 
-    @Autowired
-    private ModelMapper mapper;
-
     @BeforeEach
     public void before() {
         authorRepository.save(AUTHOR);
@@ -35,23 +30,24 @@ public class BookControllerIT extends BaseTestContext {
 
     @Test
     public void getBookById_shouldGetBook() {
-        final ApiBookExtended result = doRequest(GET, "/books/" + BOOK_ID, null, ApiBookExtended.class);
-        assertThat(result).isEqualTo(mapper.map(BOOK, ApiBookExtended.class));
+        final ApiBook result = doRequest(GET, "/books/" + BOOK_ID, null, ApiBook.class);
+        assertThat(result).isEqualTo(API_BOOK);
     }
 
     @Test
     public void getBooks_shouldReturnBooks() {
-        final ApiBookExtended[] expected = new ApiBookExtended[] { mapper.map(BOOK, ApiBookExtended.class) };
-        final ApiBookExtended[] result = doRequest(GET, "/books", null, ApiBookExtended[].class);
+        final ApiBook[] expected = new ApiBook[] { API_BOOK };
+        final ApiBook[] result = doRequest(GET, "/books", null, ApiBook[].class);
         assertThat(result).isEqualTo(expected);
     }
 
     @Test
     public void updateBook_shouldUpdateAndReturnBook() {
+        bookRepository.save(BOOK);
         final String newName = UUID.randomUUID().toString();
-        BOOK.setName(newName);
-        final ApiBookExtended result = doRequest(PUT, "/books/" + BOOK_ID, mapper.map(BOOK, ApiBook.class), ApiBookExtended.class);
-        assertThat(result).isEqualTo(mapper.map(BOOK, ApiBookExtended.class));
+        API_BOOK.setName(newName);
+        final ApiBook result = doRequest(PUT, "/books/" + BOOK_ID, API_BOOK, ApiBook.class);
+        assertThat(result).isEqualTo(API_BOOK);
     }
 
     @Test

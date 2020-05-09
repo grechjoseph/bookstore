@@ -1,10 +1,8 @@
 package com.jg.bookstore.api.controller;
 
 import com.jg.bookstore.BaseTestContext;
-import com.jg.bookstore.api.model.author.ApiAuthor;
-import com.jg.bookstore.api.model.author.ApiAuthorExtended;
-import com.jg.bookstore.api.model.book.ApiBook;
-import com.jg.bookstore.api.model.book.ApiBookExtended;
+import com.jg.bookstore.api.model.ApiAuthor;
+import com.jg.bookstore.api.model.ApiBook;
 import com.jg.bookstore.domain.repository.AuthorRepository;
 import com.jg.bookstore.domain.repository.BookRepository;
 import com.jg.bookstore.mapper.ModelMapper;
@@ -30,36 +28,37 @@ public class AuthorControllerIT extends BaseTestContext {
 
     @Test
     public void createAuthor_validModel_shouldCreateAuthor() {
-        final ApiAuthorExtended result = doRequest(POST,"/authors", API_AUTHOR, ApiAuthorExtended.class);
+        final ApiAuthor result = doRequest(POST,"/authors", API_AUTHOR, ApiAuthor.class);
         assertThat(result.getFirstName()).isEqualTo(API_AUTHOR.getFirstName());
         assertThat(result.getLastName()).isEqualTo(API_AUTHOR.getLastName());
         assertThat(result.getId()).isNotNull();
-        final ApiAuthorExtended dbObject = mapper.map(authorRepository.findById(result.getId()).get(), ApiAuthorExtended.class);
+        final ApiAuthor dbObject = mapper.map(authorRepository.findById(result.getId()).get(), ApiAuthor.class);
         assertThat(dbObject).isEqualTo(result);
     }
 
     @Test
     public void getAuthorById_shouldRetrieveAuthor() {
         authorRepository.save(AUTHOR);
-        final ApiAuthorExtended result = doRequest(GET, "/authors/" + AUTHOR_ID, null, ApiAuthorExtended.class);
-        assertThat(result).isEqualTo(mapper.map(AUTHOR, ApiAuthorExtended.class));
+        final ApiAuthor result = doRequest(GET, "/authors/" + AUTHOR_ID, null, ApiAuthor.class);
+        assertThat(result).isEqualTo(API_AUTHOR);
     }
 
     @Test
     public void getAuthors_shouldRetrieveAuthorsList() {
         authorRepository.save(AUTHOR);
-        final ApiAuthorExtended[] expected = new ApiAuthorExtended[] { mapper.map(AUTHOR, ApiAuthorExtended.class) };
-        ApiAuthorExtended[] result = doRequest(GET, "/authors", null, ApiAuthorExtended[].class);
+        final ApiAuthor[] expected = new ApiAuthor[] { API_AUTHOR };
+        ApiAuthor[] result = doRequest(GET, "/authors", null, ApiAuthor[].class);
         assertThat(result).isEqualTo(expected);
     }
 
     @Test
     public void updateAuthor_shouldUpdateAndReturnAuthor() throws Exception {
         authorRepository.save(AUTHOR);
-        final ApiAuthor expected = new ApiAuthor("New First Name", "New Last Name");
-        final ApiAuthorExtended result = doRequest(PUT, "/authors/" + AUTHOR_ID, expected, ApiAuthorExtended.class);
-        assertThat(result).isEqualTo(expected);
-        assertThat(mapper.map(authorRepository.findById(AUTHOR_ID).orElseThrow(Exception::new), ApiAuthorExtended.class)).isEqualTo(result);
+        API_AUTHOR.setFirstName("New First Name");
+        API_AUTHOR.setLastName("New Last Name");
+        final ApiAuthor result = doRequest(PUT, "/authors/" + AUTHOR_ID, API_AUTHOR, ApiAuthor.class);
+        assertThat(result).isEqualTo(API_AUTHOR);
+        assertThat(mapper.map(authorRepository.findById(AUTHOR_ID).orElseThrow(Exception::new), ApiAuthor.class)).isEqualTo(result);
     }
 
     @Test
@@ -73,7 +72,7 @@ public class AuthorControllerIT extends BaseTestContext {
     public void getAuthorBooks_shouldReturnBooks() {
         authorRepository.save(AUTHOR);
         bookRepository.save(BOOK);
-        final ApiBook[] expected = new ApiBook[] { mapper.map(BOOK, ApiBook.class) };
+        final ApiBook[] expected = new ApiBook[] { API_BOOK };
         final ApiBook[] result = doRequest(GET, "/authors/" + AUTHOR_ID + "/books", null, ApiBook[].class);
         assertThat(result).isEqualTo(expected);
     }
@@ -81,10 +80,10 @@ public class AuthorControllerIT extends BaseTestContext {
     @Test
     public void createAuthorBook_shouldCreateBook() {
         authorRepository.save(AUTHOR);
-        final ApiBookExtended result = doRequest(POST, "/authors/" + AUTHOR_ID + "/books", mapper.map(BOOK, ApiBook.class), ApiBookExtended.class);
-        assertThat(result).isEqualTo(mapper.map(BOOK, ApiBookExtended.class));
+        final ApiBook result = doRequest(POST, "/authors/" + AUTHOR_ID + "/books", API_BOOK, ApiBook.class);
+        assertThat(result).isEqualTo(API_BOOK);
         assertThat(mapper.mapAsList(bookRepository.findByAuthorIdAndDeletedFalse(AUTHOR_ID), ApiBook.class))
-                .isEqualTo(List.of(mapper.map(BOOK, ApiBook.class)));
+                .isEqualTo(List.of(API_BOOK));
     }
 
 }

@@ -1,7 +1,7 @@
 package com.jg.bookstore.api.controller;
 
-import com.jg.bookstore.api.model.order.ApiPurchaseOrderExtended;
-import com.jg.bookstore.api.model.orderentry.ApiOrderEntry;
+import com.jg.bookstore.api.model.ApiOrderEntry;
+import com.jg.bookstore.api.model.ApiPurchaseOrder;
 import com.jg.bookstore.domain.entity.OrderEntry;
 import com.jg.bookstore.domain.enums.OrderStatus;
 import com.jg.bookstore.mapper.ModelMapper;
@@ -28,35 +28,35 @@ public class OrderController {
 
     @PostMapping
     @ApiOperation(value = "Create an Order.")
-    public ApiPurchaseOrderExtended createOrder(@RequestBody final List<ApiOrderEntry> orderEntries) {
-        return modelMapper.map(orderService.createOrder(mapApiOrderEntriesToOrderEntries(orderEntries)), ApiPurchaseOrderExtended.class);
+    public ApiPurchaseOrder createOrder(@RequestBody final List<ApiOrderEntry> orderEntries) {
+        return modelMapper.map(orderService.createOrder(mapApiOrderEntriesToOrderEntries(orderEntries)), ApiPurchaseOrder.class);
     }
 
     @GetMapping("/{orderId}")
     @ApiOperation(value = "Get an Order by its ID.")
-    public ApiPurchaseOrderExtended getOrderById(@PathVariable final UUID orderId) {
-        return modelMapper.map(orderService.getOrderById(orderId), ApiPurchaseOrderExtended.class);
+    public ApiPurchaseOrder getOrderById(@PathVariable final UUID orderId) {
+        return modelMapper.map(orderService.getOrderById(orderId), ApiPurchaseOrder.class);
     }
 
     @GetMapping
     @ApiOperation(value = "Get Orders.")
-    public List<ApiPurchaseOrderExtended> getOrders() {
-        return modelMapper.mapAsList(orderService.getOrders(), ApiPurchaseOrderExtended.class);
+    public List<ApiPurchaseOrder> getOrders() {
+        return modelMapper.mapAsList(orderService.getOrders(), ApiPurchaseOrder.class);
     }
 
     @PutMapping("/{orderId}")
     @ApiOperation(value = "Update an Order's items.")
-    public ApiPurchaseOrderExtended updatedOrderItems(@PathVariable final UUID orderId, @RequestBody final List<ApiOrderEntry> orderEntries) {
+    public ApiPurchaseOrder updatedOrderItems(@PathVariable final UUID orderId, @RequestBody final List<ApiOrderEntry> orderEntries) {
         return modelMapper.map(
                 orderService.updateOrderItems(orderId, mapApiOrderEntriesToOrderEntries(orderEntries)),
-                ApiPurchaseOrderExtended.class);
+                ApiPurchaseOrder.class);
     }
 
     @PutMapping("/{orderId}/status")
     @ApiOperation(value = "Update an Order's status. The status can go from CREATED to CONFIRMED or CANCELLED, from CONFIRMED to PAID or CANCELLED, from PAID to REFUNDED or SHIPPED. " +
             "Confirming an Order commits the stock to that Order, while Cancelling after Confirming, or Refunding an order, un-commits the stock.")
-    public ApiPurchaseOrderExtended updateOrderStatus(@PathVariable final UUID orderId, @RequestBody final OrderStatus orderStatus) {
-        return modelMapper.map(orderService.updateOrderStatus(orderId, orderStatus), ApiPurchaseOrderExtended.class);
+    public ApiPurchaseOrder updateOrderStatus(@PathVariable final UUID orderId, @RequestBody final OrderStatus orderStatus) {
+        return modelMapper.map(orderService.updateOrderStatus(orderId, orderStatus), ApiPurchaseOrder.class);
     }
 
     private Set<OrderEntry> mapApiOrderEntriesToOrderEntries(final List<ApiOrderEntry> orderEntries) {
