@@ -225,25 +225,25 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private List<PurchaseOrder> findAll() {
-        return orderRepository.findAll().stream().map(this::updatePrices).collect(Collectors.toList());
+        return orderRepository.findAll().stream().map(this::processPrices).collect(Collectors.toList());
     }
 
     private PurchaseOrder findById(final UUID orderId) {
-        return updatePrices(orderRepository.findById(orderId).orElseThrow(() -> new BaseException(ORDER_NOT_FOUND)));
+        return processPrices(orderRepository.findById(orderId).orElseThrow(() -> new BaseException(ORDER_NOT_FOUND)));
     }
 
     private PurchaseOrder save(final PurchaseOrder purchaseOrder) {
-        return updatePrices(orderRepository.save(purchaseOrder));
+        return processPrices(orderRepository.save(purchaseOrder));
     }
 
-    private PurchaseOrder updatePrices(final PurchaseOrder purchaseOrder) {
+    private PurchaseOrder processPrices(final PurchaseOrder purchaseOrder) {
         purchaseOrder.setTotalPrice(BigDecimal.valueOf(purchaseOrder.getOrderEntries().stream()
                 .mapToDouble(orderEntry -> orderEntry.getQuantity() * orderEntry.getBook().getPrice().doubleValue()).sum())
                 .setScale(2, RoundingMode.HALF_UP));
-        return convertPriceIfApplicable(purchaseOrder);
+        return processForex(purchaseOrder);
     }
 
-    private PurchaseOrder convertPriceIfApplicable(final PurchaseOrder purchaseOrder) {
+    private PurchaseOrder processForex(final PurchaseOrder purchaseOrder) {
         final Currency displayCurrency = ContextHolder.getContext().getDisplayCurrency();
 
         if(Objects.nonNull(displayCurrency)){

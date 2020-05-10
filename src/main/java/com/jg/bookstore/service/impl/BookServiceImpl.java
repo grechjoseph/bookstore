@@ -32,13 +32,13 @@ public class BookServiceImpl implements BookService {
     public Book createBook(final UUID authorId, final Book book) {
         log.debug("Creating Book [{}]", book.getName());
         book.setAuthor(authorService.getAuthorById(authorId));
-        return convertPriceIfApplicable(bookRepository.save(book));
+        return processForex(bookRepository.save(book));
     }
 
     @Override
     public Book getBookById(final UUID bookId) {
         log.debug("Retrieving Book by ID [{}].", bookId);
-        return convertPriceIfApplicable(bookRepository.findByIdAndDeletedFalse(bookId)
+        return processForex(bookRepository.findByIdAndDeletedFalse(bookId)
                 .orElseThrow(() -> new BaseException(BOOK_NOT_FOUND)));
     }
 
@@ -48,7 +48,7 @@ public class BookServiceImpl implements BookService {
         return (authorId == null ? bookRepository.findByDeletedFalse() :
                 bookRepository.findByAuthorIdAndDeletedFalse(authorId))
                 .stream()
-                .map(this::convertPriceIfApplicable)
+                .map(this::processForex)
                 .collect(Collectors.toList());
     }
 
@@ -57,7 +57,7 @@ public class BookServiceImpl implements BookService {
         log.debug("Updating Book with ID [{}].", bookId);
         newValues.setAuthor(getBookById(bookId).getAuthor());
         newValues.setId(bookId);
-        return convertPriceIfApplicable(bookRepository.save(newValues));
+        return processForex(bookRepository.save(newValues));
     }
 
     @Override
@@ -68,7 +68,7 @@ public class BookServiceImpl implements BookService {
         bookRepository.save(book);
     }
 
-    private Book convertPriceIfApplicable(final Book book) {
+    private Book processForex(final Book book) {
         final Currency displayCurrency = ContextHolder.getContext().getDisplayCurrency();
         if(Objects.nonNull(displayCurrency)) {
             book.setConvertedPrice(forexService.convert(book.getPrice(), displayCurrency));
