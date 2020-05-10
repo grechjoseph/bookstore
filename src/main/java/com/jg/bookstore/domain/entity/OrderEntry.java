@@ -23,4 +23,7 @@ public class OrderEntry {
     private Integer quantity;
     private BigDecimal finalUnitPrice;
 
+    @Transient
+    private UUID bookId;
+
 }

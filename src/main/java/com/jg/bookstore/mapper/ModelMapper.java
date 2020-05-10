@@ -35,22 +35,41 @@ public class ModelMapper extends ConfigurableMapper {
 
     private void registerClassMaps() {
         mapperFactory.registerClassMap(mapperFactory.classMap(OrderEntry.class, ApiOrderEntry.class)
-                .field("book.id", "bookId")
-                .byDefault()
-                .toClassMap());
+            .field("book.id", "bookId")
+            .byDefault()
+        );
 
         mapperFactory.registerClassMap(mapperFactory.classMap(PurchaseOrder.class, ApiPurchaseOrder.class)
-                .customize(new CustomMapper<PurchaseOrder, ApiPurchaseOrder>() {
+            .customize(new CustomMapper<PurchaseOrder, ApiPurchaseOrder>() {
+                @Override
+                public void mapAtoB(final PurchaseOrder purchaseOrder, final ApiPurchaseOrder apiPurchaseOrder, final MappingContext context) {
+                    apiPurchaseOrder.setId(purchaseOrder.getId());
+                    apiPurchaseOrder.setOrderStatus(purchaseOrder.getOrderStatus());
+                    apiPurchaseOrder.setOrderEntries(mapAsList(purchaseOrder.getOrderEntries(), ApiOrderEntry.class));
+                    apiPurchaseOrder.setTotalPrice(BigDecimal.valueOf(purchaseOrder.getOrderEntries().stream()
+                            .mapToDouble(orderEntry -> orderEntry.getQuantity() * orderEntry.getBook().getPrice().doubleValue()).sum())
+                            .setScale(2, RoundingMode.HALF_UP));
+                }
+            })
+        );
+
+        mapperFactory.registerClassMap(mapperFactory.classMap(OrderEntry.class, ApiOrderEntry.class)
+                .customize(new CustomMapper<OrderEntry, ApiOrderEntry>() {
+
                     @Override
-                    public void mapAtoB(final PurchaseOrder purchaseOrder, final ApiPurchaseOrder apiPurchaseOrder, final MappingContext context) {
-                        apiPurchaseOrder.setId(purchaseOrder.getId());
-                        apiPurchaseOrder.setOrderStatus(purchaseOrder.getOrderStatus());
-                        apiPurchaseOrder.setOrderEntries(mapAsList(purchaseOrder.getOrderEntries(), ApiOrderEntry.class));
-                        apiPurchaseOrder.setTotalPrice(BigDecimal.valueOf(purchaseOrder.getOrderEntries().stream()
-                                .mapToDouble(orderEntry -> orderEntry.getQuantity() * orderEntry.getBook().getPrice().doubleValue()).sum())
-                                .setScale(2, RoundingMode.HALF_UP));
+                    public void mapAtoB(final OrderEntry orderEntry, final ApiOrderEntry apiOrderEntry, final MappingContext context) {
+                        apiOrderEntry.setId(orderEntry.getId());
+                        apiOrderEntry.setBookId(orderEntry.getBook().getId());
+                        apiOrderEntry.setQuantity(orderEntry.getQuantity());
+                        apiOrderEntry.setFinalUnitPrice(orderEntry.getFinalUnitPrice());
+                    }
+
+                    @Override
+                    public void mapBtoA(final ApiOrderEntry apiOrderEntry, final OrderEntry orderEntry, final MappingContext context) {
+                        orderEntry.setQuantity(apiOrderEntry.getQuantity());
+                        orderEntry.setBookId(apiOrderEntry.getBookId());
                     }
                 })
-                .toClassMap());
+        );
     }
 }

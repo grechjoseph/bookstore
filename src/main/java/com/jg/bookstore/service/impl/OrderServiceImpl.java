@@ -29,6 +29,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public PurchaseOrder createOrder(final Set<OrderEntry> orderEntries) {
         log.debug("Creating Purchase Order.");
+        orderEntries.forEach(orderEntry ->
+                orderEntry.setBook(bookRepository.findByIdAndDeletedFalse(orderEntry.getBookId())
+                        .orElseThrow(() -> new BaseException(BOOK_NOT_FOUND))));
         validateOrderEntries(orderEntries);
         final PurchaseOrder purchaseOrder = new PurchaseOrder();
         orderEntries.forEach(purchaseOrder::addOrderEntry);
@@ -50,6 +53,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public PurchaseOrder updateOrderItems(final UUID orderId, final Set<OrderEntry> orderEntries) {
         log.debug("Updating Order Entries for Purchase Order with ID [{}].", orderId);
+        orderEntries.forEach(orderEntry ->
+                orderEntry.setBook(bookRepository.findByIdAndDeletedFalse(orderEntry.getBookId())
+                        .orElseThrow(() -> new BaseException(BOOK_NOT_FOUND))));
         validateOrderEntries(orderEntries);
         final PurchaseOrder purchaseOrder = getOrderById(orderId);
 
