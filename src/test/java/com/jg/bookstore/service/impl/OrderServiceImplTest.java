@@ -39,6 +39,7 @@ public class OrderServiceImplTest extends BaseTestContext {
         when(mockOrderRepository.findAll()).thenReturn(List.of(ORDER));
         when(mockOrderRepository.save(any(PurchaseOrder.class))).thenAnswer(invocation -> invocation.getArguments()[0]);
         when(mockBookRepository.findByIdAndLock(BOOK_ID)).thenReturn(Optional.of(BOOK));
+        when(mockBookRepository.findByIdAndDeletedFalse(BOOK_ID)).thenReturn(Optional.of(BOOK));
     }
 
     @Test
@@ -98,7 +99,7 @@ public class OrderServiceImplTest extends BaseTestContext {
     @Test
     public void updateOrderItems_validOrderEntries_shouldUpdateOrder() {
         final OrderEntry newOrderEntry = new OrderEntry();
-        newOrderEntry.setBook(BOOK);
+        newOrderEntry.setBookId(BOOK_ID);
         newOrderEntry.setQuantity(5);
         final PurchaseOrder result = orderService.updateOrderItems(ORDER_ID, Set.of(newOrderEntry));
         verify(mockOrderRepository).flush();

@@ -64,6 +64,7 @@ public class TestUtils {
         BOOK.setDeleted(false);
 
         ORDER_ENTRY.setBook(BOOK);
+        ORDER_ENTRY.setBookId(BOOK_ID);
         ORDER_ENTRY.setQuantity(ORDER_ENTRY_QUANTITY);
         ORDER_ENTRY.setFinalUnitPrice(ORDER_ENTRY_FINAL_UNIT_PRICE);
 
