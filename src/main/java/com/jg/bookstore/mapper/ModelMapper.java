@@ -12,10 +12,6 @@ import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.impl.ConfigurableMapper;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Objects;
-
 @Component
 @RequiredArgsConstructor
 public class ModelMapper extends ConfigurableMapper {
@@ -46,9 +42,8 @@ public class ModelMapper extends ConfigurableMapper {
                     apiPurchaseOrder.setId(purchaseOrder.getId());
                     apiPurchaseOrder.setOrderStatus(purchaseOrder.getOrderStatus());
                     apiPurchaseOrder.setOrderEntries(mapAsList(purchaseOrder.getOrderEntries(), ApiOrderEntry.class));
-                    apiPurchaseOrder.setTotalPrice(BigDecimal.valueOf(purchaseOrder.getOrderEntries().stream()
-                            .mapToDouble(orderEntry -> orderEntry.getQuantity() * orderEntry.getBook().getPrice().doubleValue()).sum())
-                            .setScale(2, RoundingMode.HALF_UP));
+                    apiPurchaseOrder.setTotalPrice(purchaseOrder.getTotalPrice());
+                    apiPurchaseOrder.setConvertedPrice(purchaseOrder.getConvertedPrice());
                 }
             })
         );
@@ -62,6 +57,7 @@ public class ModelMapper extends ConfigurableMapper {
                         apiOrderEntry.setBookId(orderEntry.getBook().getId());
                         apiOrderEntry.setQuantity(orderEntry.getQuantity());
                         apiOrderEntry.setFinalUnitPrice(orderEntry.getFinalUnitPrice());
+                        apiOrderEntry.setConvertedFinalUnitPrice(orderEntry.getConvertedFinalUnitPrice());
                     }
 
                     @Override

@@ -11,7 +11,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.util.MultiValueMap;
+
+import java.util.List;
+import java.util.Objects;
+
+import static com.jg.bookstore.utils.TestUtils.CONTEXT;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public abstract class BaseTestContext {
@@ -44,12 +51,19 @@ public abstract class BaseTestContext {
     }
 
     protected   <T> T doRequest(final HttpMethod httpMethod,
-                            final String endpoint,
-                            final Object requestBody,
-                            final Class<T> returnType) {
+                                final String endpoint,
+                                final Object requestBody,
+                                final Class<T> returnType) {
+
+        final MultiValueMap<String, String> headers = new HttpHeaders();
+
+        if(Objects.nonNull(CONTEXT.getDisplayCurrency())) {
+            headers.put("display-currency", List.of(CONTEXT.getDisplayCurrency().toString()));
+        }
+
         return testRestTemplate.exchange("http://localhost:" + port + endpoint,
                 httpMethod,
-                new HttpEntity<>(requestBody),
+                new HttpEntity<>(requestBody, headers),
                 returnType,
                 new Object()).getBody();
     }

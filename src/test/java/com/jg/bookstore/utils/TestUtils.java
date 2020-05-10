@@ -4,6 +4,7 @@ import com.jg.bookstore.api.model.ApiAuthor;
 import com.jg.bookstore.api.model.ApiBook;
 import com.jg.bookstore.api.model.ApiOrderEntry;
 import com.jg.bookstore.api.model.ApiPurchaseOrder;
+import com.jg.bookstore.config.context.Context;
 import com.jg.bookstore.domain.entity.Author;
 import com.jg.bookstore.domain.entity.Book;
 import com.jg.bookstore.domain.entity.OrderEntry;
@@ -21,6 +22,8 @@ import static com.jg.bookstore.domain.enums.OrderStatus.CREATED;
 @Component
 public class TestUtils {
 
+    public static Context CONTEXT = new Context();
+
     public static Author AUTHOR = new Author();
     public static UUID AUTHOR_ID = AUTHOR.getId();
     public static String AUTHOR_FIRST_NAME = "First Name";
@@ -30,7 +33,7 @@ public class TestUtils {
     public static UUID BOOK_ID = BOOK.getId();
     public static String BOOK_NAME = "Book Name";
     public static Integer BOOK_STOCK = 10;
-    public static BigDecimal BOOK_PRICE = BigDecimal.valueOf(0.01);
+    public static BigDecimal BOOK_PRICE = BigDecimal.valueOf(10.00).setScale(2);
 
     public static OrderEntry ORDER_ENTRY = new OrderEntry();
     public static UUID ORDER_ENTRY_ID = ORDER_ENTRY.getId();
@@ -53,6 +56,8 @@ public class TestUtils {
     }
 
     public static void reset() {
+        CONTEXT = new Context();
+
         AUTHOR.setFirstName(AUTHOR_FIRST_NAME);
         AUTHOR.setLastName(AUTHOR_LAST_NAME);
         AUTHOR.setDeleted(false);
@@ -77,6 +82,7 @@ public class TestUtils {
         API_ORDER_ENTRY = mapper.map(ORDER_ENTRY, ApiOrderEntry.class);
         API_PURCHASE_ORDER = mapper.map(ORDER, ApiPurchaseOrder.class);
         API_PURCHASE_ORDER.setOrderEntries(List.of( API_ORDER_ENTRY ));
+        API_PURCHASE_ORDER.setTotalPrice(BOOK_PRICE);
     }
 
 }

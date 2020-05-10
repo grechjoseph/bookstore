@@ -4,6 +4,7 @@ import com.jg.bookstore.domain.enums.OrderStatus;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,6 +28,12 @@ public class PurchaseOrder {
 
     @Enumerated(value = EnumType.STRING)
     private OrderStatus orderStatus = OrderStatus.CREATED;
+
+    @Transient
+    private BigDecimal totalPrice;
+
+    @Transient
+    private BigDecimal convertedPrice;
 
     // Restrict access.
     private void setOrderEntries(final Set<OrderEntry> orderEntries) {}

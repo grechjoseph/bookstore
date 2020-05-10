@@ -1,5 +1,6 @@
 package com.jg.bookstore.service.impl;
 
+import com.jg.bookstore.config.context.ContextHolder;
 import com.jg.bookstore.domain.entity.Book;
 import com.jg.bookstore.domain.entity.OrderEntry;
 import com.jg.bookstore.domain.entity.PurchaseOrder;
@@ -7,13 +8,17 @@ import com.jg.bookstore.domain.enums.OrderStatus;
 import com.jg.bookstore.domain.exception.BaseException;
 import com.jg.bookstore.domain.repository.BookRepository;
 import com.jg.bookstore.domain.repository.OrderRepository;
+import com.jg.bookstore.service.ForexService;
 import com.jg.bookstore.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.jg.bookstore.domain.enums.OrderStatus.*;
 import static com.jg.bookstore.domain.exception.ErrorCode.*;
@@ -23,6 +28,7 @@ import static com.jg.bookstore.domain.exception.ErrorCode.*;
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
+    private final ForexService forexService;
     private final OrderRepository orderRepository;
     private final BookRepository bookRepository;
 
@@ -35,19 +41,19 @@ public class OrderServiceImpl implements OrderService {
         validateOrderEntries(orderEntries);
         final PurchaseOrder purchaseOrder = new PurchaseOrder();
         orderEntries.forEach(purchaseOrder::addOrderEntry);
-        return orderRepository.save(purchaseOrder);
+        return updatePrices(orderRepository.save(purchaseOrder));
     }
 
     @Override
     public PurchaseOrder getOrderById(final UUID orderId) {
         log.debug("Retrieving Purchase Order by ID [{}].", orderId);
-        return orderRepository.findById(orderId).orElseThrow(() -> new BaseException(ORDER_NOT_FOUND));
+        return updatePrices(orderRepository.findById(orderId).orElseThrow(() -> new BaseException(ORDER_NOT_FOUND)));
     }
 
     @Override
     public List<PurchaseOrder> getOrders() {
         log.debug("Retrieving Purchase Orders.");
-        return orderRepository.findAll();
+        return orderRepository.findAll().stream().map(this::updatePrices).collect(Collectors.toList());
     }
 
     @Override
@@ -72,7 +78,7 @@ public class OrderServiceImpl implements OrderService {
         log.debug("Adding new Order Entries for Purchase Order with ID [{}].", orderId);
         orderEntries.forEach(purchaseOrder::addOrderEntry);
         purchaseOrder.setOrderStatus(CREATED);
-        return orderRepository.save(purchaseOrder);
+        return updatePrices(orderRepository.save(purchaseOrder));
     }
 
     @Override
@@ -83,18 +89,18 @@ public class OrderServiceImpl implements OrderService {
 
         switch(orderStatus) {
             case CONFIRMED:
-                return confirmOrder(purchaseOrder);
+                return updatePrices(confirmOrder(purchaseOrder));
             case REFUNDED:
-                return refundOrder(purchaseOrder);
+                return updatePrices(refundOrder(purchaseOrder));
             case CANCELLED:
-                return cancelOrder(purchaseOrder);
+                return updatePrices(cancelOrder(purchaseOrder));
             case SHIPPED:
             case PAID:
                 purchaseOrder.setOrderStatus(orderStatus);
-                return orderRepository.save(purchaseOrder);
+                return updatePrices(orderRepository.save(purchaseOrder));
             default:
                 log.warn("Unrecognised Order Status provided.");
-                return purchaseOrder;
+                return updatePrices(purchaseOrder);
         }
     }
 
@@ -132,7 +138,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         purchaseOrder.setOrderStatus(CONFIRMED);
-        return orderRepository.save(purchaseOrder);
+        return updatePrices(orderRepository.save(purchaseOrder));
     }
 
     private PurchaseOrder refundOrder(final PurchaseOrder purchaseOrder) {
@@ -216,5 +222,26 @@ public class OrderServiceImpl implements OrderService {
         if(!purchaseOrder.getOrderStatus().getNextSteps().contains(newOrderStatus)) {
             throw new BaseException(ORDER_INVALID_STATUS);
         }
+    }
+
+    private PurchaseOrder updatePrices(final PurchaseOrder purchaseOrder) {
+        purchaseOrder.setTotalPrice(BigDecimal.valueOf(purchaseOrder.getOrderEntries().stream()
+                .mapToDouble(orderEntry -> orderEntry.getQuantity() * orderEntry.getBook().getPrice().doubleValue()).sum())
+                .setScale(2, RoundingMode.HALF_UP));
+        return convertPriceIfApplicable(purchaseOrder);
+    }
+
+    private PurchaseOrder convertPriceIfApplicable(final PurchaseOrder purchaseOrder) {
+        final Currency displayCurrency = ContextHolder.getContext().getDisplayCurrency();
+
+        if(Objects.nonNull(displayCurrency)){
+            purchaseOrder.setConvertedPrice(forexService.convert(purchaseOrder.getTotalPrice(), displayCurrency));
+            purchaseOrder.getOrderEntries().stream()
+                    .filter(orderEntry -> Objects.nonNull(orderEntry.getFinalUnitPrice()))
+                    .forEach(orderEntry -> orderEntry.setConvertedFinalUnitPrice(
+                            forexService.convert(orderEntry.getFinalUnitPrice(), displayCurrency)));
+        }
+
+        return purchaseOrder;
     }
 }

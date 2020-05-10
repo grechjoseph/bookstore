@@ -4,11 +4,12 @@ import com.jg.bookstore.BaseTestContext;
 import com.jg.bookstore.api.model.ApiBook;
 import com.jg.bookstore.domain.repository.AuthorRepository;
 import com.jg.bookstore.domain.repository.BookRepository;
-import com.jg.bookstore.mapper.ModelMapper;
+import com.jg.bookstore.service.ForexService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Currency;
 import java.util.UUID;
 
 import static com.jg.bookstore.utils.TestUtils.*;
@@ -18,18 +19,20 @@ import static org.springframework.http.HttpMethod.*;
 public class BookControllerIT extends BaseTestContext {
 
     @Autowired
+    private ForexService forexService;
+
+    @Autowired
     private AuthorRepository authorRepository;
 
     @Autowired
     private BookRepository bookRepository;
 
-    @Autowired
-    private ModelMapper mapper;
-
     @BeforeEach
     public void before() {
         authorRepository.save(AUTHOR);
         bookRepository.save(BOOK);
+        CONTEXT.setDisplayCurrency(Currency.getInstance("GBP"));
+        API_BOOK.setConvertedPrice(forexService.convert(API_BOOK.getPrice(), CONTEXT.getDisplayCurrency()));
     }
 
     @Test
@@ -52,7 +55,7 @@ public class BookControllerIT extends BaseTestContext {
         API_BOOK.setName(newName);
         final ApiBook result = doRequest(PUT, "/books/" + BOOK_ID, API_BOOK, ApiBook.class);
         assertThat(result).isEqualTo(API_BOOK);
-        assertThat(mapper.map(bookRepository.findById(BOOK_ID).get(), ApiBook.class)).isEqualTo(API_BOOK);
+        assertThat(bookRepository.findById(BOOK_ID).isPresent()).isTrue();
     }
 
     @Test

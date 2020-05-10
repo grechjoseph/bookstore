@@ -24,6 +24,9 @@ public class OrderEntry {
     private BigDecimal finalUnitPrice;
 
     @Transient
+    private BigDecimal convertedFinalUnitPrice;
+
+    @Transient
     private UUID bookId;
 
 }
