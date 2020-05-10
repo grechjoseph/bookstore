@@ -41,19 +41,19 @@ public class OrderServiceImpl implements OrderService {
         validateOrderEntries(orderEntries);
         final PurchaseOrder purchaseOrder = new PurchaseOrder();
         orderEntries.forEach(purchaseOrder::addOrderEntry);
-        return updatePrices(orderRepository.save(purchaseOrder));
+        return save(purchaseOrder);
     }
 
     @Override
     public PurchaseOrder getOrderById(final UUID orderId) {
         log.debug("Retrieving Purchase Order by ID [{}].", orderId);
-        return updatePrices(orderRepository.findById(orderId).orElseThrow(() -> new BaseException(ORDER_NOT_FOUND)));
+        return findById(orderId);
     }
 
     @Override
     public List<PurchaseOrder> getOrders() {
         log.debug("Retrieving Purchase Orders.");
-        return orderRepository.findAll().stream().map(this::updatePrices).collect(Collectors.toList());
+        return findAll();
     }
 
     @Override
@@ -78,7 +78,7 @@ public class OrderServiceImpl implements OrderService {
         log.debug("Adding new Order Entries for Purchase Order with ID [{}].", orderId);
         orderEntries.forEach(purchaseOrder::addOrderEntry);
         purchaseOrder.setOrderStatus(CREATED);
-        return updatePrices(orderRepository.save(purchaseOrder));
+        return save(purchaseOrder);
     }
 
     @Override
@@ -89,18 +89,18 @@ public class OrderServiceImpl implements OrderService {
 
         switch(orderStatus) {
             case CONFIRMED:
-                return updatePrices(confirmOrder(purchaseOrder));
+                return confirmOrder(purchaseOrder);
             case REFUNDED:
-                return updatePrices(refundOrder(purchaseOrder));
+                return refundOrder(purchaseOrder);
             case CANCELLED:
-                return updatePrices(cancelOrder(purchaseOrder));
+                return cancelOrder(purchaseOrder);
             case SHIPPED:
             case PAID:
                 purchaseOrder.setOrderStatus(orderStatus);
-                return updatePrices(orderRepository.save(purchaseOrder));
+                return save(purchaseOrder);
             default:
                 log.warn("Unrecognised Order Status provided.");
-                return updatePrices(purchaseOrder);
+                return findById(purchaseOrder.getId());
         }
     }
 
@@ -125,20 +125,20 @@ public class OrderServiceImpl implements OrderService {
             if (exception.getErrorCode().equals(ORDER_NOT_ENOUGH_STOCK)) {
                 log.warn("Reverting Purchase Order with ID [{}] to 'CREATED' since its requested stock is not fully available.", purchaseOrder.getId());
                 purchaseOrder.setOrderStatus(CREATED);
-                orderRepository.save(purchaseOrder);
+                save(purchaseOrder);
             }
 
             if (exception.getErrorCode().equals(BOOK_NOT_FOUND)) {
                 log.warn("Reverting Purchase Order with ID [{}] to 'CREATED' since its requested items are not fully available.", purchaseOrder.getId());
                 purchaseOrder.setOrderStatus(CREATED);
-                orderRepository.save(purchaseOrder);
+                save(purchaseOrder);
             }
 
             throw exception;
         }
 
         purchaseOrder.setOrderStatus(CONFIRMED);
-        return updatePrices(orderRepository.save(purchaseOrder));
+        return save(purchaseOrder);
     }
 
     private PurchaseOrder refundOrder(final PurchaseOrder purchaseOrder) {
@@ -149,7 +149,7 @@ public class OrderServiceImpl implements OrderService {
          */
         reverseOrderStock(purchaseOrder);
         purchaseOrder.setOrderStatus(REFUNDED);
-        return orderRepository.save(purchaseOrder);
+        return save(purchaseOrder);
     }
 
     private PurchaseOrder cancelOrder(final PurchaseOrder purchaseOrder) {
@@ -163,7 +163,7 @@ public class OrderServiceImpl implements OrderService {
             reverseOrderStock(purchaseOrder);
         }
         purchaseOrder.setOrderStatus(CANCELLED);
-        return orderRepository.save(purchaseOrder);
+        return save(purchaseOrder);
     }
 
     private void reverseOrderStock(final PurchaseOrder purchaseOrder) {
@@ -222,6 +222,18 @@ public class OrderServiceImpl implements OrderService {
         if(!purchaseOrder.getOrderStatus().getNextSteps().contains(newOrderStatus)) {
             throw new BaseException(ORDER_INVALID_STATUS);
         }
+    }
+
+    private List<PurchaseOrder> findAll() {
+        return orderRepository.findAll().stream().map(this::updatePrices).collect(Collectors.toList());
+    }
+
+    private PurchaseOrder findById(final UUID orderId) {
+        return updatePrices(orderRepository.findById(orderId).orElseThrow(() -> new BaseException(ORDER_NOT_FOUND)));
+    }
+
+    private PurchaseOrder save(final PurchaseOrder purchaseOrder) {
+        return updatePrices(orderRepository.save(purchaseOrder));
     }
 
     private PurchaseOrder updatePrices(final PurchaseOrder purchaseOrder) {
