@@ -8,6 +8,8 @@ insert into bookstore.account_detail values ('133eaa1e-9479-11ea-bb37-0242ac1300
 
 -- user_detail
 insert into bookstore.user_detail values('c530b91c-93b4-11ea-bb37-0242ac130002', 'c530b818-93b4-11ea-bb37-0242ac130002', 'John', 'Doe', '+35679797979');
+insert into bookstore.user_detail values('a8a716a8-9538-11ea-bb37-0242ac130002', '133ea938-9479-11ea-bb37-0242ac130002', 'John', 'Doe', '+35677997799');
+insert into bookstore.user_detail values('a8a718b0-9538-11ea-bb37-0242ac130002', '133eaa1e-9479-11ea-bb37-0242ac130002', 'John', 'Doe', '+35699779977');
 
 -- address
 insert into bookstore.address values('c530b9f8-93b4-11ea-bb37-0242ac130002', 'c530b91c-93b4-11ea-bb37-0242ac130002', 'BILLING', 'Line 1', 'Address Line 2', 'Qormi', 'Malta', 'ABC1234');
