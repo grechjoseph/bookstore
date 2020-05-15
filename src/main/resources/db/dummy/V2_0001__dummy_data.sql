@@ -1,12 +1,12 @@
 -- clients
-insert into bookstore.client_detail values ('c530b46c-93b4-11ea-bb37-0242ac130002', 'client', 'secret');
+insert into bookstore.client_detail values ('c530b46c-93b4-11ea-bb37-0242ac130002', 'client', '$2a$10$OqS9qeIPTr7PnlC5GQqsieWlX9cU5/7K3xDXVPPv.KmNwx2hBVd6u');
 
 -- account
-insert into bookstore.account_detail values ('c530b818-93b4-11ea-bb37-0242ac130002', 'admin@mail.com', '123456', 'ACTIVE');
-insert into bookstore.account_detail values ('133ea938-9479-11ea-bb37-0242ac130002', 'reader@mail.com', '123456', 'ACTIVE');
-insert into bookstore.account_detail values ('133eaa1e-9479-11ea-bb37-0242ac130002', 'writer@mail.com', '123456', 'ACTIVE');
+insert into bookstore.account_detail values ('c530b818-93b4-11ea-bb37-0242ac130002', 'admin@mail.com', '$2a$10$lREV4Jhau/QHz50RkITYS.iSZBdEA6A4hCrQaBszuF2SziZckgVVC', 'ACTIVE');
+insert into bookstore.account_detail values ('133ea938-9479-11ea-bb37-0242ac130002', 'reader@mail.com', '$2a$10$lREV4Jhau/QHz50RkITYS.iSZBdEA6A4hCrQaBszuF2SziZckgVVC', 'ACTIVE');
+insert into bookstore.account_detail values ('133eaa1e-9479-11ea-bb37-0242ac130002', 'writer@mail.com', '$2a$10$lREV4Jhau/QHz50RkITYS.iSZBdEA6A4hCrQaBszuF2SziZckgVVC', 'ACTIVE');
 
--- user_detail
+-- user_detail@
 insert into bookstore.user_detail values('c530b91c-93b4-11ea-bb37-0242ac130002', 'c530b818-93b4-11ea-bb37-0242ac130002', 'John', 'Doe', '+35679797979');
 insert into bookstore.user_detail values('a8a716a8-9538-11ea-bb37-0242ac130002', '133ea938-9479-11ea-bb37-0242ac130002', 'John', 'Doe', '+35677997799');
 insert into bookstore.user_detail values('a8a718b0-9538-11ea-bb37-0242ac130002', '133eaa1e-9479-11ea-bb37-0242ac130002', 'John', 'Doe', '+35699779977');
