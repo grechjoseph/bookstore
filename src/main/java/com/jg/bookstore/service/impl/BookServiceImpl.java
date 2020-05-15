@@ -1,6 +1,6 @@
 package com.jg.bookstore.service.impl;
 
-import com.jg.bookstore.config.context.ContextHolder;
+import com.jg.bookstore.config.security.context.ContextHolder;
 import com.jg.bookstore.domain.entity.Book;
 import com.jg.bookstore.domain.exception.BaseException;
 import com.jg.bookstore.domain.repository.BookRepository;
@@ -69,7 +69,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private Book processForex(final Book book) {
-        final Currency displayCurrency = ContextHolder.getContext().getDisplayCurrency();
+        final Currency displayCurrency = null; // TODO ContextHolder.get().getDisplayCurrency();
         if(Objects.nonNull(displayCurrency)) {
             book.setConvertedPrice(forexService.convert(book.getPrice(), displayCurrency));
         }

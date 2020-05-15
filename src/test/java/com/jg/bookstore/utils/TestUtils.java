@@ -4,7 +4,7 @@ import com.jg.bookstore.api.model.ApiAuthor;
 import com.jg.bookstore.api.model.ApiBook;
 import com.jg.bookstore.api.model.ApiOrderEntry;
 import com.jg.bookstore.api.model.ApiPurchaseOrder;
-import com.jg.bookstore.config.context.Context;
+import com.jg.bookstore.config.security.context.Context;
 import com.jg.bookstore.domain.entity.Author;
 import com.jg.bookstore.domain.entity.Book;
 import com.jg.bookstore.domain.entity.OrderEntry;

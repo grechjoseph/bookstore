@@ -19,12 +19,13 @@ import java.util.stream.Collectors;
  * Enhances a JWT Token being issued with custom properties.
  */
 @RequiredArgsConstructor
-public class AuthorizationJwtTokenConverter extends JwtAccessTokenConverter {
+public class CustomJwtTokenConverter extends JwtAccessTokenConverter {
 
     public static final String USERNAME = "username";
     public static final String USER_ID = "user_id";
     public static final String JTI = "jti";
-    private static final String AUTHORITY = "authorities";
+    public static final String AUTHORITY = "authorities";
+    public static final String DISPLAY_CURRENCY = "displayCurrency";
 
     private final UserService userService;
 
@@ -37,6 +38,7 @@ public class AuthorizationJwtTokenConverter extends JwtAccessTokenConverter {
         additionalInfo.put(USER_ID, accountDetail.getId());
         additionalInfo.put(USERNAME, accountDetail.getEmail());
         additionalInfo.put(JTI, UUID.randomUUID().toString());
+        additionalInfo.put(DISPLAY_CURRENCY, accountDetail.getAccountConfiguration().getDisplayCurrency());
         final List<String> permissions = accountDetail.getPermissions().stream().map(Permission::getName).collect(Collectors.toList());
         additionalInfo.put(AUTHORITY, permissions);
 
@@ -46,6 +48,13 @@ public class AuthorizationJwtTokenConverter extends JwtAccessTokenConverter {
         ((DefaultOAuth2AccessToken) accessToken).setValue(encoded);
 
         return super.enhance(accessToken, authentication);
+    }
+
+    @Override
+    public OAuth2Authentication extractAuthentication(final Map<String, ?> claims) {
+        OAuth2Authentication authentication = super.extractAuthentication(claims);
+        authentication.setDetails(claims);
+        return authentication;
     }
 
 }

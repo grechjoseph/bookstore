@@ -57,8 +57,8 @@ public abstract class BaseTestContext {
 
         final MultiValueMap<String, String> headers = new HttpHeaders();
 
-        if(Objects.nonNull(CONTEXT.getDisplayCurrency())) {
-            headers.put("display-currency", List.of(CONTEXT.getDisplayCurrency().toString()));
+        if(Objects.nonNull(null)){ // TODO CONTEXT.getDisplayCurrency())) {
+            headers.put("display-currency", List.of("")); // TODO CONTEXT.getDisplayCurrency().toString()));
         }
 
         return testRestTemplate.exchange("http://localhost:" + port + endpoint,

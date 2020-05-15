@@ -1,6 +1,5 @@
 package com.jg.bookstore.config.security;
 
-import com.jg.bookstore.domain.entity.ClientDetail;
 import com.jg.bookstore.service.ClientDetailService;
 import com.jg.bookstore.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +36,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     public void configure(final AuthorizationServerEndpointsConfigurer endpoints) {
         TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
-        tokenEnhancerChain.setTokenEnhancers(List.of(new AuthorizationJwtTokenConverter(userService), accessTokenConverter()));
+        tokenEnhancerChain.setTokenEnhancers(List.of(new CustomJwtTokenConverter(userService), accessTokenConverter()));
         endpoints.authenticationManager(authenticationManager)
                 .tokenEnhancer(tokenEnhancerChain)
                 .accessTokenConverter(accessTokenConverter())
@@ -59,7 +58,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
-        JwtAccessTokenConverter converter = new AuthorizationJwtTokenConverter(userService);
+        JwtAccessTokenConverter converter = new CustomJwtTokenConverter(userService);
         converter.setSigningKey("123456");
         return converter;
     }

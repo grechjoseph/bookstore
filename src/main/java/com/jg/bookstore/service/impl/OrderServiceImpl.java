@@ -1,6 +1,6 @@
 package com.jg.bookstore.service.impl;
 
-import com.jg.bookstore.config.context.ContextHolder;
+import com.jg.bookstore.config.security.context.ContextHolder;
 import com.jg.bookstore.domain.entity.Book;
 import com.jg.bookstore.domain.entity.OrderEntry;
 import com.jg.bookstore.domain.entity.PurchaseOrder;
@@ -244,7 +244,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private PurchaseOrder processForex(final PurchaseOrder purchaseOrder) {
-        final Currency displayCurrency = ContextHolder.getContext().getDisplayCurrency();
+        final Currency displayCurrency = null; // TODO ContextHolder.getContext().getDisplayCurrency();
 
         if(Objects.nonNull(displayCurrency)){
             purchaseOrder.setConvertedPrice(forexService.convert(purchaseOrder.getTotalPrice(), displayCurrency));

@@ -6,10 +6,15 @@ insert into bookstore.account_detail values ('c530b818-93b4-11ea-bb37-0242ac1300
 insert into bookstore.account_detail values ('133ea938-9479-11ea-bb37-0242ac130002', 'reader@mail.com', '$2a$10$lREV4Jhau/QHz50RkITYS.iSZBdEA6A4hCrQaBszuF2SziZckgVVC', 'ACTIVE');
 insert into bookstore.account_detail values ('133eaa1e-9479-11ea-bb37-0242ac130002', 'writer@mail.com', '$2a$10$lREV4Jhau/QHz50RkITYS.iSZBdEA6A4hCrQaBszuF2SziZckgVVC', 'ACTIVE');
 
--- user_detail@
+-- user_details
 insert into bookstore.user_detail values('c530b91c-93b4-11ea-bb37-0242ac130002', 'c530b818-93b4-11ea-bb37-0242ac130002', 'John', 'Doe', '+35679797979');
 insert into bookstore.user_detail values('a8a716a8-9538-11ea-bb37-0242ac130002', '133ea938-9479-11ea-bb37-0242ac130002', 'John', 'Doe', '+35677997799');
 insert into bookstore.user_detail values('a8a718b0-9538-11ea-bb37-0242ac130002', '133eaa1e-9479-11ea-bb37-0242ac130002', 'John', 'Doe', '+35699779977');
+
+-- user_configuration
+insert into bookstore.account_configuration values ('a22cc84e-96f6-11ea-bb37-0242ac130002', 'c530b818-93b4-11ea-bb37-0242ac130002', 'EUR');
+insert into bookstore.account_configuration values ('a22cca9c-96f6-11ea-bb37-0242ac130002', '133ea938-9479-11ea-bb37-0242ac130002', 'GBP');
+insert into bookstore.account_configuration values ('a22ccb96-96f6-11ea-bb37-0242ac130002', '133eaa1e-9479-11ea-bb37-0242ac130002', 'GBP');
 
 -- address
 insert into bookstore.address values('c530b9f8-93b4-11ea-bb37-0242ac130002', 'c530b91c-93b4-11ea-bb37-0242ac130002', 'BILLING', 'Line 1', 'Address Line 2', 'Qormi', 'Malta', 'ABC1234');

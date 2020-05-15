@@ -45,6 +45,9 @@ public class AccountDetail implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "permission_group_id"))
     private Set<PermissionGroup> permissionGroups;
 
+    @OneToOne(mappedBy = "accountDetail")
+    private AccountConfiguration accountConfiguration;
+
     public Set<Permission> getPermissions() {
         final Set<Permission> permissions = new HashSet<>(this.permissions);
         permissionGroups.forEach(permissionGroup -> permissions.addAll(permissionGroup.getPermissions()));
