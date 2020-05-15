@@ -18,7 +18,6 @@ import static javax.persistence.FetchType.EAGER;
 
 @Data
 @Entity
-// TODO implement UserDetails
 public class AccountDetail implements UserDetails {
 
     @Id
