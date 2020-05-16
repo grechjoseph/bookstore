@@ -65,6 +65,7 @@ public abstract class BaseTestContext {
 
     @BeforeEach
     final public void beforeEach() {
+        // TODO These entities should move to TestUtils, and should be persisted only in test suites that use/require them, just like AUTHOR, BOOK, etc...
         clientDetailRepository.save(sampleClientDetail());
         final AccountDetail accountDetail = sampleAccountDetail();
         accountDetail.setPermissions(Set.of(permissionRepository.save(sampleAdminPermission())));
