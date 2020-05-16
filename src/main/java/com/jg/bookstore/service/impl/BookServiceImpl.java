@@ -69,7 +69,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private Book processForex(final Book book) {
-        final Currency displayCurrency = null; // TODO ContextHolder.get().getDisplayCurrency();
+        final Currency displayCurrency = ContextHolder.get().getDisplayCurrency();
         if(Objects.nonNull(displayCurrency)) {
             book.setConvertedPrice(forexService.convert(book.getPrice(), displayCurrency));
         }

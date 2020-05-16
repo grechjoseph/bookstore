@@ -3,6 +3,7 @@ package com.jg.bookstore.config.security;
 import com.jg.bookstore.service.ClientDetailService;
 import com.jg.bookstore.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,6 +34,9 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private final ClientDetailService clientService;
     private final UserService userService;
 
+    @Value(value = "${jwt.signing-secret:secret}")
+    private String signingSecret;
+
     @Override
     public void configure(final AuthorizationServerEndpointsConfigurer endpoints) {
         TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
@@ -59,7 +63,8 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
         JwtAccessTokenConverter converter = new CustomJwtTokenConverter(userService);
-        converter.setSigningKey("123456");
+        // Used to verify Jwt token authenticity.
+        converter.setSigningKey(signingSecret);
         return converter;
     }
 

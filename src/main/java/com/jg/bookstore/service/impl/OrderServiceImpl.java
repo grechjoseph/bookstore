@@ -244,7 +244,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private PurchaseOrder processForex(final PurchaseOrder purchaseOrder) {
-        final Currency displayCurrency = null; // TODO ContextHolder.getContext().getDisplayCurrency();
+        final Currency displayCurrency = ContextHolder.get().getDisplayCurrency();
 
         if(Objects.nonNull(displayCurrency)){
             purchaseOrder.setConvertedPrice(forexService.convert(purchaseOrder.getTotalPrice(), displayCurrency));

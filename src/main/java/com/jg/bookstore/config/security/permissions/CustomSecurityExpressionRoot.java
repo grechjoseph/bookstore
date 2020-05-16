@@ -62,7 +62,7 @@ public class CustomSecurityExpressionRoot implements MethodSecurityExpressionOpe
 
     private boolean hasAnyAuthorityName(String... roles) {
         final Set<String> roleSet = getAuthoritySet();
-        return roleSet.containsAll(new HashSet<>(Arrays.asList(roles)));
+        return roleSet.contains("ADMIN") || roleSet.containsAll(new HashSet<>(Arrays.asList(roles)));
     }
 
     @Override
