@@ -31,8 +31,8 @@ public class BookControllerIT extends BaseTestContext {
     public void before() {
         authorRepository.save(AUTHOR);
         bookRepository.save(BOOK);
-        CONTEXT.setDisplayCurrency(Currency.getInstance("GBP"));
-        API_BOOK.setConvertedPrice(forexService.convert(API_BOOK.getPrice(), CONTEXT.getDisplayCurrency()));
+        // TODO CONTEXT.setDisplayCurrency(Currency.getInstance("GBP"));
+        // TODO API_BOOK.setConvertedPrice(forexService.convert(API_BOOK.getPrice(), CONTEXT.getDisplayCurrency()));
     }
 
     @Test

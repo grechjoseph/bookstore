@@ -10,10 +10,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Currency;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static com.jg.bookstore.config.security.CustomJwtTokenConverter.*;
 
@@ -50,8 +47,11 @@ public class ContextFilter extends OncePerRequestFilter {
 
                 context.setUsername((String) decodedDetails.get(USERNAME));
                 context.setUserId(UUID.fromString(decodedDetails.get(USER_ID).toString()));
-                context.setDisplayCurrency(Currency.getInstance(decodedDetails.get(DISPLAY_CURRENCY).toString()));
                 context.setPermissions((List<String>) decodedDetails.get(AUTHORITY));
+
+                context.setDisplayCurrency(Objects.nonNull(decodedDetails.get(DISPLAY_CURRENCY)) ?
+                        Currency.getInstance(decodedDetails.get(DISPLAY_CURRENCY).toString())
+                        : null);
             }
         }
     }

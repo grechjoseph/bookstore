@@ -13,6 +13,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import static javax.persistence.CascadeType.MERGE;
+import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.EnumType.STRING;
 import static javax.persistence.FetchType.EAGER;
 
@@ -21,7 +23,7 @@ import static javax.persistence.FetchType.EAGER;
 public class AccountDetail implements UserDetails {
 
     @Id
-    private UUID id;
+    private UUID id = UUID.randomUUID();
 
     @NotEmpty
     private String email;
@@ -39,7 +41,7 @@ public class AccountDetail implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "permission_id"))
     private Set<Permission> permissions;
 
-    @ManyToMany(fetch = EAGER)
+    @ManyToMany(fetch = EAGER, cascade = { MERGE, PERSIST })
     @JoinTable(name = "account_permission_groups",
             joinColumns = @JoinColumn(name = "account_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_group_id"))

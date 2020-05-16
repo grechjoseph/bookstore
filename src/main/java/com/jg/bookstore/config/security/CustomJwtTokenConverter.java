@@ -10,10 +10,7 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -40,10 +37,13 @@ public class CustomJwtTokenConverter extends JwtAccessTokenConverter {
 
         additionalInfo.put(USER_ID, accountDetail.getId());
         additionalInfo.put(USERNAME, accountDetail.getEmail());
-        additionalInfo.put(DISPLAY_CURRENCY, accountDetail.getAccountConfiguration().getDisplayCurrency());
         final List<String> permissions = accountDetail.getPermissions().stream().map(Permission::getName).collect(Collectors.toList());
         additionalInfo.put(AUTHORITY, permissions);
         additionalInfo.put(JTI, UUID.randomUUID().toString());
+
+        if(Objects.nonNull(accountDetail.getAccountConfiguration())) {
+            additionalInfo.put(DISPLAY_CURRENCY, accountDetail.getAccountConfiguration().getDisplayCurrency());
+        }
 
         ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);
 

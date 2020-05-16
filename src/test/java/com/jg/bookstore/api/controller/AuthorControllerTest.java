@@ -6,7 +6,6 @@ import com.jg.bookstore.domain.repository.AuthorRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.security.test.context.support.WithMockUser;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -16,7 +15,6 @@ import static com.jg.bookstore.utils.TestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.POST;
 
-@WithMockUser(authorities = "ADMIN")
 public class AuthorControllerTest extends BaseTestContext {
 
     private static final String VALIDATION_MESSAGE_AUTHOR_FIRST_NAME = "First Name must be between 2 and 20 characters.";

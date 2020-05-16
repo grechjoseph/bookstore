@@ -18,7 +18,7 @@ public class ClientDetail implements ClientDetails {
     private static final String REFRESH_TOKEN = "refresh_token";
 
     @Id
-    private UUID id;
+    private UUID id = UUID.randomUUID();
 
     @NotEmpty
     private String clientId;

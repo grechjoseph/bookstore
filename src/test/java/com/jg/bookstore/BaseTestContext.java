@@ -1,10 +1,10 @@
 package com.jg.bookstore;
 
-import com.jg.bookstore.domain.repository.AuthorRepository;
-import com.jg.bookstore.domain.repository.BookRepository;
-import com.jg.bookstore.domain.repository.OrderRepository;
+import com.jg.bookstore.domain.entity.AccountDetail;
+import com.jg.bookstore.domain.entity.ClientDetail;
+import com.jg.bookstore.domain.entity.Permission;
+import com.jg.bookstore.domain.repository.*;
 import com.jg.bookstore.utils.TestUtils;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,26 +14,24 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.oauth2.common.util.JacksonJsonParser;
-import org.springframework.security.web.FilterChainProxy;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
+import java.util.Set;
 
-import static com.jg.bookstore.utils.TestUtils.CONTEXT;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static com.jg.bookstore.domain.enums.AccountStatus.ACTIVE;
+import static org.springframework.http.HttpMethod.POST;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public abstract class BaseTestContext {
+
+    public static final String CLIENT_ID = "client";
+    public static final String CLIENT_SECRET = "secret";
+    public static final String ACCOUNT_EMAIL = "admin@mail.com";
+    public static final String ACCOUNT_PASSWORD = "123456";
 
     @LocalServerPort
     private int port;
@@ -51,17 +49,26 @@ public abstract class BaseTestContext {
     private OrderRepository orderRepository;
 
     @Autowired
+    private ClientDetailRepository clientDetailRepository;
+
+    @Autowired
+    private AccountDetailRepository accountDetailRepository;
+
+    @Autowired
+    private PermissionRepository permissionRepository;
+
+    @Autowired
     private WebApplicationContext wac;
 
     @Autowired
-    private FilterChainProxy springSecurityFilterChain;
-
-    private MockMvc mockMvc;
+    private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     final public void beforeEach() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac)
-                .addFilter(springSecurityFilterChain).build();
+        clientDetailRepository.save(sampleClientDetail());
+        final AccountDetail accountDetail = sampleAccountDetail();
+        accountDetail.setPermissions(Set.of(permissionRepository.save(sampleAdminPermission())));
+        accountDetailRepository.save(accountDetail);
         TestUtils.reset();
     }
 
@@ -70,6 +77,9 @@ public abstract class BaseTestContext {
         orderRepository.deleteAll();
         bookRepository.deleteAll();
         authorRepository.deleteAll();
+        accountDetailRepository.deleteAll();
+        permissionRepository.deleteAll();
+        clientDetailRepository.deleteAll();
     }
 
     protected <T> T doRequest(final HttpMethod httpMethod,
@@ -77,41 +87,46 @@ public abstract class BaseTestContext {
                                 final Object requestBody,
                                 final Class<T> returnType) {
 
-        final MultiValueMap<String, String> headers = new HttpHeaders();
-        headers.put("Authorization", List.of("Bearer " + obtainAccessToken("user", "password")));
-
-        if(Objects.nonNull(CONTEXT.getDisplayCurrency())) {
-            headers.put("display-currency", List.of(CONTEXT.getDisplayCurrency().toString()));
-        }
+        final HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + obtainAccessToken(ACCOUNT_EMAIL, ACCOUNT_PASSWORD));
 
         return testRestTemplate.exchange("http://localhost:" + port + endpoint,
                 httpMethod,
                 new HttpEntity<>(requestBody, headers),
-                returnType,
-                new Object()).getBody();
+                returnType).getBody();
     }
 
-    @SneakyThrows
-    private String obtainAccessToken(String username, String password) {
+    public String obtainAccessToken(final String username, final String password) {
+        final Map resultMap = testRestTemplate.withBasicAuth(CLIENT_ID, CLIENT_SECRET)
+                .exchange("http://localhost:" + port + "/oauth/token" +
+                                "?grant_type=password&username=" + username + "&password=" + password,
+                        POST,
+                        new HttpEntity<>(null, null),
+                        Map.class).getBody();
 
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("grant_type", "password");
-        params.add("client_id", "client");
-        params.add("username", username);
-        params.add("password", password);
+        return resultMap != null ? resultMap.get("access_token").toString() : null;
+    }
 
-        ResultActions result
-                = mockMvc.perform(post("/oauth/token")
-                .params(params)
-                .with(httpBasic("client","secret"))
-                .accept("application/json;charset=UTF-8"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json;charset=UTF-8"));
+    private ClientDetail sampleClientDetail() {
+        final ClientDetail sampleClientDetail = new ClientDetail();
+        sampleClientDetail.setClientId(CLIENT_ID);
+        sampleClientDetail.setSecret(passwordEncoder.encode(CLIENT_SECRET));
+        return sampleClientDetail;
+    }
 
-        String resultString = result.andReturn().getResponse().getContentAsString();
+    private AccountDetail sampleAccountDetail() {
+        final AccountDetail accountDetail = new AccountDetail();
+        accountDetail.setEmail(ACCOUNT_EMAIL);
+        accountDetail.setPassword(passwordEncoder.encode(ACCOUNT_PASSWORD));
+        accountDetail.setStatus(ACTIVE);
+        return accountDetail;
+    }
 
-        JacksonJsonParser jsonParser = new JacksonJsonParser();
-        return jsonParser.parseMap(resultString).get("access_token").toString();
+    private Permission sampleAdminPermission() {
+        final Permission permission = new Permission();
+        permission.setName("ADMIN");
+        permission.setDescription("Admin permission");
+        return permission;
     }
 
 }
