@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.jg.bookstore.domain.enums.AccountStatus.PENDING_VERIFICATION;
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.EnumType.STRING;
 import static javax.persistence.FetchType.EAGER;
@@ -24,6 +25,9 @@ public class AccountDetail implements UserDetails {
     @Id
     private UUID id = UUID.randomUUID();
 
+    @OneToOne(mappedBy = "accountDetail")
+    private UserDetail userDetail;
+
     @NotEmpty
     private String email;
 
@@ -32,21 +36,21 @@ public class AccountDetail implements UserDetails {
 
     @NotNull
     @Enumerated(STRING)
-    private AccountStatus status;
+    private AccountStatus status = PENDING_VERIFICATION;
 
     @ManyToMany(fetch = EAGER)
     @JoinTable(name = "account_permissions",
             joinColumns = @JoinColumn(name = "account_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id"))
-    private Set<Permission> permissions;
+    private Set<Permission> permissions = new HashSet<>();
 
     @ManyToMany(fetch = EAGER, cascade = { MERGE, PERSIST })
     @JoinTable(name = "account_permission_groups",
             joinColumns = @JoinColumn(name = "account_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_group_id"))
-    private Set<PermissionGroup> permissionGroups;
+    private Set<PermissionGroup> permissionGroups = new HashSet<>();
 
-    @OneToOne(mappedBy = "accountDetail", cascade = { PERSIST, MERGE, REMOVE })
+    @OneToOne(mappedBy = "accountDetail")
     private AccountConfiguration accountConfiguration;
 
     public Set<Permission> getPermissions() {

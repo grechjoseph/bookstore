@@ -14,7 +14,7 @@ import java.util.UUID;
 public class AccountConfiguration {
 
     @Id
-    private UUID id;
+    private UUID id = UUID.randomUUID();
 
     @OneToOne
     @JoinColumn(name = "account_id")

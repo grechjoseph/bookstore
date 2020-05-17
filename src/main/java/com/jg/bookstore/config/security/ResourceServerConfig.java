@@ -26,8 +26,20 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/oauth/**")
+                .antMatchers("/oauth/**",
+                        "/register",
+                        "/data/**",
+
+                        "/v2/api-docs",
+                        "/configuration/ui",
+                        "/swagger-resources/**",
+                        "/configuration/security",
+                        "/swagger-ui.html",
+                        "/webjars/**")
                 .permitAll().anyRequest().authenticated();
+
+        // For H2 Console once logged in.
+        http.headers().frameOptions().sameOrigin();
 
         http.addFilterBefore(contextFilter, BasicAuthenticationFilter.class);
     }

@@ -1,9 +1,7 @@
 package com.jg.bookstore.mapper;
 
-import com.jg.bookstore.api.model.ApiOrderEntry;
-import com.jg.bookstore.api.model.ApiPurchaseOrder;
-import com.jg.bookstore.domain.entity.OrderEntry;
-import com.jg.bookstore.domain.entity.PurchaseOrder;
+import com.jg.bookstore.api.model.*;
+import com.jg.bookstore.domain.entity.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import ma.glasnost.orika.CustomMapper;

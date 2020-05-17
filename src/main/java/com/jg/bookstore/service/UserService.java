@@ -1,5 +1,6 @@
 package com.jg.bookstore.service;
 
+import com.jg.bookstore.domain.entity.AccountConfiguration;
 import com.jg.bookstore.domain.entity.AccountDetail;
 import com.jg.bookstore.domain.entity.Address;
 import com.jg.bookstore.domain.entity.UserDetail;
@@ -10,7 +11,10 @@ import java.util.UUID;
 
 public interface UserService extends UserDetailsService {
 
-    UserDetail registerUser(final AccountDetail accountDetail, final UserDetail userDetail, final Address... addresses);
+    void registerUser(final AccountDetail accountDetail,
+                            final UserDetail userDetail,
+                            final AccountConfiguration accountConfiguration,
+                            final Address... addresses);
 
     UserDetail updatePersonalInfo(final UUID userDetailId, final UserDetail newValues);
 

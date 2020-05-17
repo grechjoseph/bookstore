@@ -15,7 +15,7 @@ import static javax.persistence.EnumType.STRING;
 public class Address {
 
     @Id
-    private UUID id;
+    private UUID id = UUID.randomUUID();
 
     @NotNull
     @ManyToOne

@@ -12,7 +12,7 @@ import java.util.UUID;
 public class PermissionGroup {
 
     @Id
-    private UUID id;
+    private UUID id = UUID.randomUUID();
 
     @NotEmpty
     private String name;
