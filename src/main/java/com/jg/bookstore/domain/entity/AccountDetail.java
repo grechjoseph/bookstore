@@ -13,8 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import static javax.persistence.CascadeType.MERGE;
-import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.CascadeType.*;
 import static javax.persistence.EnumType.STRING;
 import static javax.persistence.FetchType.EAGER;
 
@@ -47,7 +46,7 @@ public class AccountDetail implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "permission_group_id"))
     private Set<PermissionGroup> permissionGroups;
 
-    @OneToOne(mappedBy = "accountDetail")
+    @OneToOne(mappedBy = "accountDetail", cascade = { PERSIST, MERGE, REMOVE })
     private AccountConfiguration accountConfiguration;
 
     public Set<Permission> getPermissions() {

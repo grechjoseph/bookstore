@@ -28,7 +28,7 @@ public class AuthorControllerIT extends BaseTestContext {
 
     @Test
     public void createAuthor_validModel_shouldCreateAuthor() {
-        final ApiAuthor result = doRequest(POST,"/authors", API_AUTHOR, ApiAuthor.class);
+        final ApiAuthor result = doAuthorizedRequest(POST,"/authors", API_AUTHOR, ApiAuthor.class);
         assertThat(result.getFirstName()).isEqualTo(API_AUTHOR.getFirstName());
         assertThat(result.getLastName()).isEqualTo(API_AUTHOR.getLastName());
         assertThat(result.getId()).isNotNull();
@@ -39,7 +39,7 @@ public class AuthorControllerIT extends BaseTestContext {
     @Test
     public void getAuthorById_shouldRetrieveAuthor() {
         authorRepository.save(AUTHOR);
-        final ApiAuthor result = doRequest(GET, "/authors/" + AUTHOR_ID, null, ApiAuthor.class);
+        final ApiAuthor result = doAuthorizedRequest(GET, "/authors/" + AUTHOR_ID, null, ApiAuthor.class);
         assertThat(result).isEqualTo(API_AUTHOR);
     }
 
@@ -47,7 +47,7 @@ public class AuthorControllerIT extends BaseTestContext {
     public void getAuthors_shouldRetrieveAuthorsList() {
         authorRepository.save(AUTHOR);
         final ApiAuthor[] expected = new ApiAuthor[] { API_AUTHOR };
-        ApiAuthor[] result = doRequest(GET, "/authors", null, ApiAuthor[].class);
+        ApiAuthor[] result = doAuthorizedRequest(GET, "/authors", null, ApiAuthor[].class);
         assertThat(result).isEqualTo(expected);
     }
 
@@ -56,7 +56,7 @@ public class AuthorControllerIT extends BaseTestContext {
         authorRepository.save(AUTHOR);
         API_AUTHOR.setFirstName("New First Name");
         API_AUTHOR.setLastName("New Last Name");
-        final ApiAuthor result = doRequest(PUT, "/authors/" + AUTHOR_ID, API_AUTHOR, ApiAuthor.class);
+        final ApiAuthor result = doAuthorizedRequest(PUT, "/authors/" + AUTHOR_ID, API_AUTHOR, ApiAuthor.class);
         assertThat(result).isEqualTo(API_AUTHOR);
         assertThat(mapper.map(authorRepository.findById(AUTHOR_ID).orElseThrow(Exception::new), ApiAuthor.class)).isEqualTo(result);
     }
@@ -64,7 +64,7 @@ public class AuthorControllerIT extends BaseTestContext {
     @Test
     public void deleteAuthor_shouldSoftDeleteAuthor() throws Exception {
         authorRepository.save(AUTHOR);
-        doRequest(DELETE, "/authors/" + AUTHOR_ID, null, null);
+        doAuthorizedRequest(DELETE, "/authors/" + AUTHOR_ID, null, null);
         assertThat(authorRepository.findById(AUTHOR_ID).orElseThrow(Exception::new).isDeleted()).isTrue();
     }
 
@@ -73,14 +73,14 @@ public class AuthorControllerIT extends BaseTestContext {
         authorRepository.save(AUTHOR);
         bookRepository.save(BOOK);
         final ApiBook[] expected = new ApiBook[] { API_BOOK };
-        final ApiBook[] result = doRequest(GET, "/authors/" + AUTHOR_ID + "/books", null, ApiBook[].class);
+        final ApiBook[] result = doAuthorizedRequest(GET, "/authors/" + AUTHOR_ID + "/books", null, ApiBook[].class);
         assertThat(result).isEqualTo(expected);
     }
 
     @Test
     public void createAuthorBook_shouldCreateBook() {
         authorRepository.save(AUTHOR);
-        final ApiBook result = doRequest(POST, "/authors/" + AUTHOR_ID + "/books", API_BOOK, ApiBook.class);
+        final ApiBook result = doAuthorizedRequest(POST, "/authors/" + AUTHOR_ID + "/books", API_BOOK, ApiBook.class);
         assertThat(result).isEqualTo(API_BOOK);
         assertThat(mapper.mapAsList(bookRepository.findByAuthorIdAndDeletedFalse(AUTHOR_ID), ApiBook.class))
                 .isEqualTo(List.of(API_BOOK));

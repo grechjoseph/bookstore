@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Currency;
 import java.util.UUID;
 
 import static com.jg.bookstore.utils.TestUtils.*;
@@ -31,20 +30,18 @@ public class BookControllerIT extends BaseTestContext {
     public void before() {
         authorRepository.save(AUTHOR);
         bookRepository.save(BOOK);
-        // TODO CONTEXT.setDisplayCurrency(Currency.getInstance("GBP"));
-        // TODO API_BOOK.setConvertedPrice(forexService.convert(API_BOOK.getPrice(), CONTEXT.getDisplayCurrency()));
     }
 
     @Test
     public void getBookById_shouldGetBook() {
-        final ApiBook result = doRequest(GET, "/books/" + BOOK_ID, null, ApiBook.class);
+        final ApiBook result = doAuthorizedRequest(GET, "/books/" + BOOK_ID, null, ApiBook.class);
         assertThat(result).isEqualTo(API_BOOK);
     }
 
     @Test
     public void getBooks_shouldReturnBooks() {
         final ApiBook[] expected = new ApiBook[] { API_BOOK };
-        final ApiBook[] result = doRequest(GET, "/books", null, ApiBook[].class);
+        final ApiBook[] result = doAuthorizedRequest(GET, "/books", null, ApiBook[].class);
         assertThat(result).isEqualTo(expected);
     }
 
@@ -53,7 +50,7 @@ public class BookControllerIT extends BaseTestContext {
         bookRepository.save(BOOK);
         final String newName = UUID.randomUUID().toString();
         API_BOOK.setName(newName);
-        final ApiBook result = doRequest(PUT, "/books/" + BOOK_ID, API_BOOK, ApiBook.class);
+        final ApiBook result = doAuthorizedRequest(PUT, "/books/" + BOOK_ID, API_BOOK, ApiBook.class);
         assertThat(result).isEqualTo(API_BOOK);
         assertThat(bookRepository.findById(BOOK_ID).isPresent()).isTrue();
     }
@@ -61,7 +58,7 @@ public class BookControllerIT extends BaseTestContext {
     @Test
     public void deleteBook_shouldSoftDeleteBook() {
         assertThat(bookRepository.findById(BOOK_ID).get().isDeleted()).isFalse();
-        doRequest(DELETE, "books/" + BOOK_ID, null, null);
+        doAuthorizedRequest(DELETE, "books/" + BOOK_ID, null, null);
         assertThat(bookRepository.findById(BOOK_ID).get().isDeleted()).isTrue();
     }
 }
