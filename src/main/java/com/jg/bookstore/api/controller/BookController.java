@@ -7,6 +7,7 @@ import com.jg.bookstore.service.BookService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -23,24 +24,28 @@ public class BookController {
     private final ModelMapper modelMapper;
 
     @GetMapping("/{bookId}")
+    @PreAuthorize("hasRole('GET_BOOK')")
     @ApiOperation(value = "Get a Book by its ID.")
     public ApiBook getBookById(@PathVariable final UUID bookId) {
         return modelMapper.map(bookService.getBookById(bookId), ApiBook.class);
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('GET_BOOK')")
     @ApiOperation(value = "Get Books.")
     public List<ApiBook> getBooks() {
         return modelMapper.mapAsList(bookService.getBooks(null), ApiBook.class);
     }
 
     @PutMapping("/{bookId}")
+    @PreAuthorize("hasRole('UPDATE_BOOK')")
     @ApiOperation(value = "Update a Book.")
     public ApiBook updateBook(@PathVariable final UUID bookId, @RequestBody @Valid final ApiBook newValues) {
         return modelMapper.map(bookService.updateBook(bookId, modelMapper.map(newValues, Book.class)), ApiBook.class);
     }
 
     @DeleteMapping("/{bookId}")
+    @PreAuthorize("hasRole('DELETE_BOOK')")
     @ApiOperation(value = "(Soft) Delete a Book.")
     public void deleteBook(@PathVariable final UUID bookId) {
         bookService.deleteBook(bookId);

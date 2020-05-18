@@ -10,6 +10,7 @@ import com.jg.bookstore.service.BookService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -27,18 +28,21 @@ public class AuthorController {
     private final ModelMapper modelMapper;
 
     @PostMapping
+    @PreAuthorize("hasRole('CREATE_AUTHOR')")
     @ApiOperation(value = "Create an Author.")
     public ApiAuthor createAuthor(@RequestBody @Valid final ApiAuthor author) {
         return modelMapper.map(authorService.createAuthor(modelMapper.map(author, Author.class)), ApiAuthor.class);
     }
 
     @GetMapping("/{authorId}")
+    @PreAuthorize("hasRole('GET_AUTHOR')")
     @ApiOperation(value = "Get an Author by ID.")
     public ApiAuthor getAuthorById(@PathVariable final UUID authorId) {
         return modelMapper.map(authorService.getAuthorById(authorId), ApiAuthor.class);
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('GET_AUTHOR')")
     @ApiOperation(value = "Get Authors.")
     public List<ApiAuthor> getAuthors() {
         return modelMapper.mapAsList(authorService.getAuthors(), ApiAuthor.class);
@@ -51,6 +55,7 @@ public class AuthorController {
     }
 
     @DeleteMapping("/{authorId}")
+    @PreAuthorize("hasRole('DELETE_AUTHOR')")
     @ApiOperation(value = "(Soft) Delete an Author.")
     public void deleteAuthor(@PathVariable final UUID authorId) {
         authorService.deleteAuthor(authorId);
@@ -58,12 +63,14 @@ public class AuthorController {
 
 
     @GetMapping("/{authorId}/books")
+    @PreAuthorize("hasRole('GET_BOOK')")
     @ApiOperation(value = "Get an Author's Books.")
     public List<ApiBook> getAuthorBooks(@PathVariable final UUID authorId) {
         return modelMapper.mapAsList(bookService.getBooks(authorId), ApiBook.class);
     }
 
     @PostMapping("/{authorId}/books")
+    @PreAuthorize("hasRole('CREATE_BOOK')")
     @ApiOperation(value = "Add a Book to an Author's collection.")
     public ApiBook createAuthorBook(@PathVariable final UUID authorId, @RequestBody @Valid final ApiBook book) {
         return modelMapper.map(bookService.createBook(authorId, modelMapper.map(book, Book.class)), ApiBook.class);

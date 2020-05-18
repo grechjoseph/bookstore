@@ -14,10 +14,10 @@ public interface UserService extends UserDetailsService {
 
     Optional<AccountDetail> findByEmail(final String email);
 
-    void registerUser(final AccountDetail accountDetail,
-                            final UserDetail userDetail,
-                            final AccountConfiguration accountConfiguration,
-                            final Address... addresses);
+    String registerUser(final AccountDetail accountDetail,
+                        final UserDetail userDetail,
+                        final AccountConfiguration accountConfiguration,
+                        final Address... addresses);
 
     void verifyEmail(final UUID accountDetailId);
 

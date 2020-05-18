@@ -46,10 +46,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void registerUser(final AccountDetail accountDetail,
-                                   final UserDetail userDetail,
-                                   final AccountConfiguration accountConfiguration,
-                                   final Address... addresses) {
+    public String registerUser(final AccountDetail accountDetail,
+                               final UserDetail userDetail,
+                               final AccountConfiguration accountConfiguration,
+                               final Address... addresses) {
 
         // Validate.
         validateAccountDetail(accountDetail);
@@ -73,6 +73,7 @@ public class UserServiceImpl implements UserService {
 
         // Notify.
         log.debug("curl -X POST http://localhost:8080/verify/{}", accountDetailId);
+        return accountDetailId.toString();
     }
 
     @Override

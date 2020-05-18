@@ -9,6 +9,7 @@ import com.jg.bookstore.service.BookService;
 import com.jg.bookstore.service.OrderService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,24 +26,28 @@ public class OrderController {
     private final ModelMapper mapper;
 
     @PostMapping
+    @PreAuthorize("hasRole('CREATE_ORDER')")
     @ApiOperation(value = "Create an Order.")
     public ApiPurchaseOrder createOrder(@RequestBody final List<ApiOrderEntry> orderEntries) {
         return mapper.map(orderService.createOrder(mapper.mapAsSet(orderEntries, OrderEntry.class)), ApiPurchaseOrder.class);
     }
 
     @GetMapping("/{orderId}")
+    @PreAuthorize("hasRole('GET_ORDER')")
     @ApiOperation(value = "Get an Order by its ID.")
     public ApiPurchaseOrder getOrderById(@PathVariable final UUID orderId) {
         return mapper.map(orderService.getOrderById(orderId), ApiPurchaseOrder.class);
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('GET_ORDER')")
     @ApiOperation(value = "Get Orders.")
     public List<ApiPurchaseOrder> getOrders() {
         return mapper.mapAsList(orderService.getOrders(), ApiPurchaseOrder.class);
     }
 
     @PutMapping("/{orderId}")
+    @PreAuthorize("hasRole('UPDATE_ORDER')")
     @ApiOperation(value = "Update an Order's items.")
     public ApiPurchaseOrder updatedOrderItems(@PathVariable final UUID orderId, @RequestBody final List<ApiOrderEntry> orderEntries) {
         return mapper.map(
@@ -51,6 +56,7 @@ public class OrderController {
     }
 
     @PutMapping("/{orderId}/status")
+    @PreAuthorize("hasRole('UPDATE_ORDER')")
     @ApiOperation(value = "Update an Order's status. The status can go from CREATED to CONFIRMED or CANCELLED, from CONFIRMED to PAID or CANCELLED, from PAID to REFUNDED or SHIPPED. " +
             "Confirming an Order commits the stock to that Order, while Cancelling after Confirming, or Refunding an order, un-commits the stock.")
     public ApiPurchaseOrder updateOrderStatus(@PathVariable final UUID orderId, @RequestBody final OrderStatus orderStatus) {
