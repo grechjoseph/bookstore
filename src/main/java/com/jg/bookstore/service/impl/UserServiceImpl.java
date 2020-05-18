@@ -20,10 +20,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
-import java.util.Set;
 import java.util.UUID;
 
-import static com.jg.bookstore.domain.exception.ErrorCode.ACCOUNT_NOT_FOUND;
+import static com.jg.bookstore.domain.enums.AddressType.BILLING;
+import static com.jg.bookstore.domain.exception.ErrorCode.*;
 
 @Slf4j
 @Service
@@ -43,22 +43,27 @@ public class UserServiceImpl implements UserService {
                                    final AccountConfiguration accountConfiguration,
                                    final Address... addresses) {
 
-        // Validate Addresses
-        // Validate User Detail
-        // Validate Account Configuration
+        // Validate.
+        validateAccountDetail(accountDetail);
+        validateAddresses(addresses);
+        validateUserDetail(userDetail);
+        validateAccountConfiguration(accountConfiguration);
 
+        // Sanitize.
         accountDetail.setPassword(passwordEncoder.encode(accountDetail.getPassword()));
+
+        // Link.
         accountConfiguration.setAccountDetail(accountDetail);
         userDetail.setAccountDetail(accountDetail);
         Arrays.stream(addresses).forEach(address -> address.setUserDetail(userDetail));
+
+        // Persist.
         accountDetailRepository.save(accountDetail);
         accountConfigurationRepository.save(accountConfiguration);
         userDetailRepository.save(userDetail);
         addressRepository.saveAll(Arrays.asList(addresses));
 
-        accountDetailRepository.findById(accountDetail.getId());
-
-        // Send notification.
+        // Notify.
     }
 
     @Override
@@ -84,5 +89,27 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
         return accountDetailRepository.findByEmail(username).orElseThrow(() -> new BaseException(ACCOUNT_NOT_FOUND));
+    }
+
+    private void validateAccountDetail(final AccountDetail candidate) {
+        accountDetailRepository.findByEmail(candidate.getEmail()).ifPresent(accountDetail -> {
+            if(!accountDetail.getId().equals(candidate.getId())) {
+                throw new BaseException(ACCOUNT_EMAIL_NOT_AVAILABLE);
+            }
+        });
+    }
+
+    private void validateAddresses(final Address... addresses) {
+        if(Arrays.stream(addresses).filter(address -> address.getAddressType().equals(BILLING)).count() > 1) {
+            throw new BaseException(ADDRESS_MORE_THAN_ONE_BILLING);
+        }
+    }
+
+    private void validateUserDetail(final UserDetail candidate) {
+
+    }
+
+    private void validateAccountConfiguration(final AccountConfiguration candidate) {
+
     }
 }
