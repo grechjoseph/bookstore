@@ -7,14 +7,19 @@ import com.jg.bookstore.domain.entity.UserDetail;
 import com.jg.bookstore.domain.enums.AccountStatus;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface UserService extends UserDetailsService {
+
+    Optional<AccountDetail> findByEmail(final String email);
 
     void registerUser(final AccountDetail accountDetail,
                             final UserDetail userDetail,
                             final AccountConfiguration accountConfiguration,
                             final Address... addresses);
+
+    void verifyEmail(final UUID accountDetailId);
 
     UserDetail updatePersonalInfo(final UUID userDetailId, final UserDetail newValues);
 

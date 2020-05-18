@@ -20,8 +20,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.UUID;
 
+import static com.jg.bookstore.domain.enums.AccountStatus.ACTIVE;
+import static com.jg.bookstore.domain.enums.AccountStatus.PENDING_VERIFICATION;
 import static com.jg.bookstore.domain.enums.AddressType.BILLING;
 import static com.jg.bookstore.domain.exception.ErrorCode.*;
 
@@ -35,6 +38,11 @@ public class UserServiceImpl implements UserService {
     private final UserDetailRepository userDetailRepository;
     private final AddressRepository addressRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Override
+    public Optional<AccountDetail> findByEmail(final String email) {
+        return accountDetailRepository.findByEmail(email);
+    }
 
     @Override
     @Transactional
@@ -58,12 +66,23 @@ public class UserServiceImpl implements UserService {
         Arrays.stream(addresses).forEach(address -> address.setUserDetail(userDetail));
 
         // Persist.
-        accountDetailRepository.save(accountDetail);
+        final UUID accountDetailId = accountDetailRepository.save(accountDetail).getId();
         accountConfigurationRepository.save(accountConfiguration);
         userDetailRepository.save(userDetail);
         addressRepository.saveAll(Arrays.asList(addresses));
 
         // Notify.
+        log.debug("curl -X POST http://localhost:8080/verify/{}", accountDetailId);
+    }
+
+    @Override
+    public void verifyEmail(final UUID accountDetailId) {
+        final AccountDetail accountDetail = accountDetailRepository.findById(accountDetailId)
+                .filter(expected -> expected.getStatus().equals(PENDING_VERIFICATION))
+                .orElseThrow(() -> new BaseException(ACCOUNT_NOT_FOUND));
+        log.info("Updating AccountDetail [{}] to {}.", accountDetail.getId(), ACTIVE);
+        accountDetail.setStatus(ACTIVE);
+        accountDetailRepository.save(accountDetail);
     }
 
     @Override
@@ -88,7 +107,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-        return accountDetailRepository.findByEmail(username).orElseThrow(() -> new BaseException(ACCOUNT_NOT_FOUND));
+        final AccountDetail found = accountDetailRepository.findByEmail(username).orElseThrow(() -> new BaseException(ACCOUNT_NOT_FOUND));
+        if(found.getStatus().equals(ACTIVE)) {
+            return found;
+        }
+        throw new BaseException(ACCOUNT_NOT_ACTIVE);
     }
 
     private void validateAccountDetail(final AccountDetail candidate) {

@@ -8,11 +8,10 @@ import com.jg.bookstore.domain.entity.UserDetail;
 import com.jg.bookstore.mapper.ModelMapper;
 import com.jg.bookstore.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,5 +28,10 @@ public class UserController {
                 mapper.map(userRegistration.getUserDetails(), UserDetail.class),
                 mapper.map(userRegistration.getAccountConfiguration(), AccountConfiguration.class),
                 addresses);
+    }
+
+    @PostMapping("/verify/{accountDetailId}")
+    public void verify(@PathVariable final UUID accountDetailId) {
+        userService.verifyEmail(accountDetailId);
     }
 }

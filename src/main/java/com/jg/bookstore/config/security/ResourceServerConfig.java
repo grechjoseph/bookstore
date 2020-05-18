@@ -28,6 +28,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/oauth/**",
                         "/register",
+                        "/verify/**",
                         "/data/**",
 
                         "/v2/api-docs",
