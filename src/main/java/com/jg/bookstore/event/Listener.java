@@ -28,7 +28,7 @@ public class Listener {
         log.info("**************************");
         log.info("");
         log.info("Swagger UI: http://{}:{}/swagger-ui.html", ip, environment.getProperty("local.server.port"));
-        log.info("H2 Database: http://{}:{}{}", ip, environment.getProperty("local.server.port"), h2ConsolePath);
+        log.info("H2 Database: http://localhost:{}{}", ip, environment.getProperty("local.server.port"), h2ConsolePath);
         log.info("");
         log.info("**************************");
     }

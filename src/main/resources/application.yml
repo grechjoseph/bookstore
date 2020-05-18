@@ -20,7 +20,7 @@ spring:
       enabled: true
       path: /data
       trace: true
-      web-allow-others: true
+      web-allow-others: false
   flyway:
     enabled: true
     baseline-version: 0
