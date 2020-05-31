@@ -62,6 +62,7 @@ When a price is returned, this is returned in the applications' base currency (d
     <li>Spring Boot Test</li>
     <li>Spring Boot Data JPA</li>
     <li>Spring Boot Actuator</li>
+    <li>Micrometer Core & Prometheus</li>
     <li>Lombok</li>
     <li>Orika Model Mapper</li>
     <li>H2</li>

@@ -13,7 +13,7 @@ import java.net.InetAddress;
 
 @Slf4j
 @Component
-public class Listener {
+public class StartupListener {
 
     @Autowired
     private Environment environment;
@@ -28,6 +28,9 @@ public class Listener {
         log.info("**************************");
         log.info("");
         log.info("Swagger UI: http://{}:{}/swagger-ui.html", ip, environment.getProperty("local.server.port"));
+        log.info("Health: http://{}:{}/actuator/health", ip, environment.getProperty("local.server.port"));
+        log.info("Metrics: http://{}:{}/actuator/metrics", ip, environment.getProperty("local.server.port"));
+        log.info("Prometheus: http://{}:{}/actuator/prometheus", ip, environment.getProperty("local.server.port"));
         log.info("H2 Database: http://localhost:{}{}", environment.getProperty("local.server.port"), h2ConsolePath);
         log.info("");
         log.info("**************************");
