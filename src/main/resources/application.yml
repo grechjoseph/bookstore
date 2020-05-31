@@ -30,6 +30,19 @@ spring:
     validate-on-migrate: false
     locations: classpath:/db/migration,classpath:/db/initial
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
 bookstore:
   base-currency: ${BASE_CURRENCY:EUR}
   forex-update-cron: ${FOREX_UPDATE_CRON:0 */10 * ? * *}
