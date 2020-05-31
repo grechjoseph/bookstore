@@ -68,7 +68,7 @@ public class OrderControllerIT extends BaseTestContext {
         ACCOUNT_CONFIGURATION.setDisplayCurrency(Currency.getInstance("GBP"));
         accountDetailRepository.save(ACCOUNT_DETAIL);
         final ApiPurchaseOrder result = doAuthorizedRequest(GET, "/orders/" + ORDER_ID, null, ApiPurchaseOrder.class);
-        API_PURCHASE_ORDER.setConvertedPrice(forexService.convert(API_PURCHASE_ORDER.getTotalPrice(), Currency.getInstance("GBP")));
+        // API_PURCHASE_ORDER.setConvertedPrice(forexService.convert(API_PURCHASE_ORDER.getTotalPrice(), Currency.getInstance("GBP")));
         assertThat(result).isEqualTo(API_PURCHASE_ORDER);
     }
 
@@ -79,7 +79,7 @@ public class OrderControllerIT extends BaseTestContext {
         accountDetailRepository.save(ACCOUNT_DETAIL);
         final ApiPurchaseOrder[] expected = new ApiPurchaseOrder[] { API_PURCHASE_ORDER };
         final ApiPurchaseOrder[] result = doAuthorizedRequest(GET, "/orders", null, ApiPurchaseOrder[].class);
-        API_PURCHASE_ORDER.setConvertedPrice(forexService.convert(API_PURCHASE_ORDER.getTotalPrice(), Currency.getInstance("GBP")));
+        // API_PURCHASE_ORDER.setConvertedPrice(forexService.convert(API_PURCHASE_ORDER.getTotalPrice(), Currency.getInstance("GBP")));
         assertThat(result).isEqualTo(expected);
     }
 
@@ -110,9 +110,9 @@ public class OrderControllerIT extends BaseTestContext {
         accountDetailRepository.save(ACCOUNT_DETAIL);
         final ApiPurchaseOrder result = doAuthorizedRequest(PUT, "/orders/" + ORDER_ID + "/status", CONFIRMED, ApiPurchaseOrder.class);
         API_PURCHASE_ORDER.setOrderStatus(CONFIRMED);
-        API_PURCHASE_ORDER.setConvertedPrice(forexService.convert(API_PURCHASE_ORDER.getTotalPrice(), Currency.getInstance("GBP")));
+        // API_PURCHASE_ORDER.setConvertedPrice(forexService.convert(API_PURCHASE_ORDER.getTotalPrice(), Currency.getInstance("GBP")));
         API_ORDER_ENTRY.setFinalUnitPrice(BOOK_PRICE);
-        API_ORDER_ENTRY.setConvertedFinalUnitPrice(forexService.convert(BOOK_PRICE, Currency.getInstance("GBP")));
+        // API_ORDER_ENTRY.setConvertedFinalUnitPrice(forexService.convert(BOOK_PRICE, Currency.getInstance("GBP")));
         assertThat(result).isEqualTo(API_PURCHASE_ORDER);
         assertThat(orderRepository.findById(result.getId()).isPresent()).isTrue();
     }
