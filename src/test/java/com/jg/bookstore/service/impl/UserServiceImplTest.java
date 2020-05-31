@@ -16,7 +16,10 @@ import org.mockito.Mock;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
+import java.util.UUID;
 
+import static com.jg.bookstore.domain.enums.AddressType.BILLING;
+import static com.jg.bookstore.domain.enums.AddressType.SHIPPING;
 import static org.mockito.Mockito.*;
 
 public class UserServiceImplTest extends BaseTestContext {
@@ -54,6 +57,10 @@ public class UserServiceImplTest extends BaseTestContext {
         final Address billingAddress = mock(Address.class);
 
         when(mockPasswordEncoder.encode("123456")).thenReturn("123456");
+        when(shippingAddress.getAddressType()).thenReturn(SHIPPING);
+        when(billingAddress.getAddressType()).thenReturn(BILLING);
+        when(accountDetail.getId()).thenReturn(UUID.randomUUID());
+        when(mockAccountDetailRepository.save(any())).thenReturn(accountDetail);
 
         userService.registerUser(accountDetail, userDetail, accountConfiguration, shippingAddress, billingAddress);
 
